@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+*.log
+
+# Environment variables
+.env
+.env.local
+.env*.local
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# IDE & Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS & OneDrive
+.DS_Store
+Thumbs.db
+~$*
+
+# Logs
+logs/
+
+# Optional: if you don't want to commit package-lock files
+# package-lock.json
+gitAuto.sh
+taskpem.pem
+frontend

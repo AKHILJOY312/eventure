@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: task_backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+
+  frontend:
+    build: ./frontend
+    container_name: task_frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend

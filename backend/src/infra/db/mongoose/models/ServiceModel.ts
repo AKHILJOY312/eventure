@@ -1,0 +1,106 @@
+// src/infrastructure/models/ServiceModel.ts
+import mongoose, { Document, Schema, Types } from "mongoose";
+import { Service, ServiceProps } from "@/entities/Service";
+
+export type ServiceCategory =
+  | "Venue"
+  | "Hotel"
+  | "Caterer"
+  | "Cameraman"
+  | "DJ";
+
+export interface ServiceDoc extends Document {
+  _id: Types.ObjectId;
+  title: string;
+  category: ServiceCategory;
+  pricePerDay: number;
+  description?: string;
+  location: string;
+  contactDetails?: string;
+  imageUrl?: string;
+  adminId: Types.ObjectId;
+  availableDates?: Date[];
+  bookedDates?: Date[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const serviceSchema = new Schema<ServiceDoc>(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    category: {
+      type: String,
+      enum: ["Venue", "Hotel", "Caterer", "Cameraman", "DJ"],
+      required: true,
+    },
+
+    pricePerDay: {
+      type: Number,
+      required: true,
+    },
+
+    description: {
+      type: String,
+    },
+
+    location: {
+      type: String,
+      required: true,
+    },
+
+    contactDetails: {
+      type: String,
+    },
+
+    imageUrl: {
+      type: String,
+    },
+
+    adminId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    availableDates: {
+      type: [Date],
+      default: [],
+    },
+
+    bookedDates: {
+      type: [Date],
+      default: [],
+    },
+  },
+  { timestamps: true },
+);
+
+export const ServiceModel = mongoose.model<ServiceDoc>(
+  "Service",
+  serviceSchema,
+);
+
+// Mapper: Mongo → Domain
+export const toServiceEntity = (doc: ServiceDoc): Service => {
+  const props: ServiceProps = {
+    id: doc._id.toString(),
+    title: doc.title,
+    category: doc.category,
+    pricePerDay: doc.pricePerDay,
+    description: doc.description,
+    location: doc.location,
+    contactDetails: doc.contactDetails,
+    imageUrl: doc.imageUrl,
+    adminId: doc.adminId.toString(),
+    availableDates: doc.availableDates ?? [],
+    bookedDates: doc.bookedDates ?? [],
+    createdAt: doc.createdAt,
+  };
+
+  return new Service(props);
+};
