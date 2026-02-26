@@ -2,7 +2,7 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/config/di/types";
 
-import { GetMeResponseDTO } from "@/application/dto/authDtos";
+import { GetMeResponseDTO } from "@/application/dto/auth.dtos";
 import { NotFoundError, UnauthorizedError } from "@/application/error/AppError";
 import { IGetMe } from "@/application/ports/use-cases/auth/interfaces";
 import { IUserRepository } from "@/application/ports/repositories/IUserRepository";

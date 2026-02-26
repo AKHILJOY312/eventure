@@ -3,7 +3,7 @@ import {
   GetMeResponseDTO,
   RegisterUserDto,
   VerifyEmailDto,
-} from "@/application/dto/authDtos";
+} from "@/application/dto/auth.dtos";
 
 export interface IRegisterUser {
   execute(dto: RegisterUserDto): Promise<{ message: string }>;

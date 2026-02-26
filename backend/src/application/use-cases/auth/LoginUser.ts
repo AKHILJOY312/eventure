@@ -4,7 +4,7 @@ import { TYPES } from "@/config/di/types";
 
 import { IAuthService } from "@/application/ports/services/IAuthService";
 import { UnauthorizedError } from "@/application/error/AppError";
-import { LoginUserResponseDTO } from "@/application/dto/authDtos";
+import { LoginUserResponseDTO } from "@/application/dto/auth.dtos";
 import { ILoginUser } from "@/application/ports/use-cases/auth/interfaces";
 import { IUserRepository } from "@/application/ports/repositories/IUserRepository";
 

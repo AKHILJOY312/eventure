@@ -3,7 +3,7 @@ import { injectable, inject } from "inversify";
 import { TYPES } from "@/config/di/types";
 import { User } from "@/entities/User";
 
-import { RegisterUserDto } from "@/application/dto/authDtos";
+import { RegisterUserDto } from "@/application/dto/auth.dtos";
 
 import { IAuthService } from "@/application/ports/services/IAuthService";
 import { IEmailService } from "@/application/ports/services/IEmailService";

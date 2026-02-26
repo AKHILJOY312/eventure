@@ -1,7 +1,7 @@
 // src/application/use-cases/auth/VerifyEmail.ts
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/config/di/types";
-import { VerifyEmailDto } from "@/application/dto/authDtos";
+import { VerifyEmailDto } from "@/application/dto/auth.dtos";
 import { BadRequestError } from "@/application/error/AppError";
 import { IUserRepository } from "@/application/ports/repositories/IUserRepository";
 import { IVerifyEmail } from "@/application/ports/use-cases/auth/interfaces";
