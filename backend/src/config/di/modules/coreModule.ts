@@ -12,10 +12,10 @@ import { NodemailerEmailService } from "@/infra/email/NodemailerEmailService";
 import { IUserRepository } from "@/application/ports/repositories/IUserRepository";
 import { IAuthService } from "@/application/ports/services/IAuthService";
 import { IEmailService } from "@/application/ports/services/IEmailService";
-import { TaskRepository } from "@/infra/db/mongoose/repositories/TaskRepository";
-import { ITaskRepository } from "@/application/ports/repositories/ITaskRepository";
-import { IAccessKeyRepository } from "@/application/ports/repositories/IAccessKeyRepository";
-import { AccessKeyRepository } from "@/infra/db/mongoose/repositories/AccessKeyRepository";
+// import { TaskRepository } from "@/infra/db/mongoose/repositories/TaskRepository";
+// import { ITaskRepository } from "@/application/ports/repositories/ITaskRepository";
+// import { IAccessKeyRepository } from "@/application/ports/repositories/IAccessKeyRepository";
+// import { AccessKeyRepository } from "@/infra/db/mongoose/repositories/AccessKeyRepository";
 
 export const coreModule = new ContainerModule((options) => {
   // Repositories (singletons)
@@ -23,13 +23,13 @@ export const coreModule = new ContainerModule((options) => {
     .bind<IUserRepository>(TYPES.UserRepository)
     .to(UserRepository)
     .inSingletonScope();
-  options
-    .bind<IAccessKeyRepository>(TYPES.AccessKeyRepository)
-    .to(AccessKeyRepository);
-  options
-    .bind<ITaskRepository>(TYPES.TaskRepository)
-    .to(TaskRepository)
-    .inSingletonScope();
+  // options
+  //   .bind<IAccessKeyRepository>(TYPES.AccessKeyRepository)
+  //   .to(AccessKeyRepository);
+  // options
+  //   .bind<ITaskRepository>(TYPES.TaskRepository)
+  //   .to(TaskRepository)
+  //   .inSingletonScope();
 
   options
     .bind<IAuthService>(TYPES.AuthService)
@@ -40,3 +40,29 @@ export const coreModule = new ContainerModule((options) => {
     .to(NodemailerEmailService)
     .inSingletonScope();
 });
+
+// src/infrastructure/inversify.config.ts
+
+// // Bind concrete repo to ALL its interfaces
+// container.bind<BookingRepository>(TYPES.BookingRepository)
+//   .to(BookingRepository)
+//   .inSingletonScope();
+
+// // Query interface
+// container.bind<IBookingQueryRepository>(TYPES.IBookingQueryRepository)
+//   .toService(TYPES.BookingRepository); // Same instance
+
+// // Command interface
+// container.bind<IBookingCommandRepository>(TYPES.IBookingCommandRepository)
+//   .toService(TYPES.BookingRepository); // Same instance
+
+// // Combined interface (for convenience)
+// container.bind<IBookingRepository>(TYPES.IBookingRepository)
+//   .toService(TYPES.BookingRepository);
+
+//   class BookingService {
+//   constructor(
+//     @inject(TYPES.IBookingRepository)
+//     private bookingRepo: IBookingRepository // ✅ Has everything
+//   ) {}
+// }

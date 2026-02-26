@@ -1,38 +1,39 @@
+export type UserRole = "user" | "admin";
+
 export interface UserProps {
   id?: string;
   name: string;
   email: string;
-  password: string;
-  otpCode?: string; // 6-digit verification code
+  password: string; // hashed
+  role: UserRole;
   isVerified: boolean;
-  securityStamp: string; // Session tracking
+  securityStamp: string;
   createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export class User {
   private _props: UserProps;
 
   constructor(props: UserProps) {
-    this._props = { ...props, isVerified: props.isVerified || false };
+    this._props = { ...props };
   }
 
-  get id() {
+  // ===== GETTERS =====
+  get id(): string | undefined {
     return this._props.id;
   }
-  get name() {
+  get name(): string {
     return this._props.name;
   }
-  get email() {
+  get email(): string {
     return this._props.email;
   }
-  get password() {
-    return this._props.password;
+  get role(): UserRole {
+    return this._props.role;
   }
-  get isVerified() {
+  get isVerified(): boolean {
     return this._props.isVerified;
-  }
-  get otpCode() {
-    return this._props.otpCode;
   }
   get securityStamp(): string {
     return this._props.securityStamp;
@@ -40,16 +41,48 @@ export class User {
   get createdAt(): Date {
     return this._props.createdAt || new Date();
   }
-  setId(id: string) {
+  get updatedAt(): Date | undefined {
+    return this._props.updatedAt;
+  }
+  get password(): string {
+    return this._props.password;
+  }
+  // ===== INFRASTRUCTURE =====
+  setId(id: string): void {
     this._props.id = id;
   }
-
-  verify(): void {
-    this._props.isVerified = true;
-    this._props.otpCode = undefined; // Clear OTP once used
-  }
-
   updateSecurityStamp(stamp: string): void {
     this._props.securityStamp = stamp;
+  }
+  // ===== BUSINESS METHODS =====
+
+  verify(): void {
+    if (this._props.isVerified) return;
+    this._props.isVerified = true;
+    this._props.updatedAt = new Date();
+  }
+
+  updateProfile(name: string, email: string): void {
+    if (name.trim().length < 2) {
+      throw new Error("INVALID_NAME: Name must be at least 2 characters");
+    }
+    this._props.name = name.trim();
+    this._props.email = email.toLowerCase().trim();
+    this._props.updatedAt = new Date();
+  }
+
+  updatePassword(newHashedPassword: string): void {
+    this._props.password = newHashedPassword;
+    this._props.securityStamp = crypto.randomUUID(); // invalidate sessions
+    this._props.updatedAt = new Date();
+  }
+
+  rotateSecurityStamp(): void {
+    this._props.securityStamp = crypto.randomUUID();
+    this._props.updatedAt = new Date();
+  }
+
+  isAdmin(): boolean {
+    return this._props.role === "admin";
   }
 }

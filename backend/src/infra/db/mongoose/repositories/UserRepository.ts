@@ -14,7 +14,8 @@ export class UserRepository implements IUserRepository {
       name: user.name,
       email: user.email,
       password: user.password,
-      otpCode: user.otpCode || null,
+      role: user.role,
+
       isVerified: user.isVerified,
       securityStamp: user.securityStamp,
     };
