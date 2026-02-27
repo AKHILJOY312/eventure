@@ -1,4 +1,4 @@
-import { Booking } from "@/entities/Booking";
+import { Booking, BookingStatus } from "@/entities/Booking";
 
 export interface IBookingRepository {
   create(booking: Booking): Promise<Booking>;
@@ -7,4 +7,12 @@ export interface IBookingRepository {
 
   findById(id: string): Promise<Booking | null>;
   findByServiceId(serviceId: string): Promise<Booking[]>;
+  findByServiceIdPaginated(params: {
+    serviceId: string;
+    status?: BookingStatus;
+    skip?: number;
+    limit?: number;
+    sortBy?: string; // e.g. "createdAt"
+    sortOrder?: "asc" | "desc";
+  }): Promise<{ bookings: Booking[]; total: number }>;
 }

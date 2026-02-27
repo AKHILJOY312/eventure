@@ -83,6 +83,21 @@ export class Service {
   /**
    * Check if service is available on a given date
    */
+  updateAvailableDates(dates: Date[]): void {
+    const normalized = dates.map((d) => {
+      const date = new Date(d);
+      date.setHours(0, 0, 0, 0);
+      return date;
+    });
+
+    // Prevent duplicates
+    const uniqueDates = Array.from(
+      new Map(normalized.map((d) => [d.getTime(), d])).values(),
+    );
+
+    this._props.availableDates = uniqueDates;
+    this._props.updatedAt = new Date();
+  }
   isAvailableOn(date: Date): boolean {
     const checkDate = new Date(date).toDateString();
 
@@ -186,31 +201,5 @@ export class Service {
 
   isOwnedBy(userId: string): boolean {
     return this._props.adminId === userId;
-  }
-
-  getBookingSummary(): {
-    totalBookedDays: number;
-    nextAvailableDate?: Date;
-    estimatedRevenue: number;
-  } {
-    const bookedCount = this._props.bookedDates?.length || 0;
-    const estimatedRevenue = bookedCount * this._props.pricePerDay;
-
-    let nextAvailableDate: Date | undefined;
-    const today = new Date();
-    for (let i = 0; i < 90; i++) {
-      const checkDate = new Date(today);
-      checkDate.setDate(today.getDate() + i);
-      if (this.isAvailableOn(checkDate)) {
-        nextAvailableDate = checkDate;
-        break;
-      }
-    }
-
-    return {
-      totalBookedDays: bookedCount,
-      nextAvailableDate,
-      estimatedRevenue,
-    };
   }
 }
