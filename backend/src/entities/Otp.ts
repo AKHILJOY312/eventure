@@ -31,6 +31,9 @@ export class Otp {
   get userId(): string {
     return this._props.userId;
   }
+  get code(): string {
+    return this._props.code;
+  }
   get purpose(): OtpPurpose {
     return this._props.purpose;
   }
@@ -42,6 +45,9 @@ export class Otp {
   }
   get attempts(): number {
     return this._props.attempts;
+  }
+  get maxAttempts(): number {
+    return this._props.maxAttempts!;
   }
   get createdAt(): Date {
     return this._props.createdAt || new Date();

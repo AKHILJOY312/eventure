@@ -12,6 +12,8 @@ import { NodemailerEmailService } from "@/infra/email/NodemailerEmailService";
 import { IUserRepository } from "@/application/ports/repositories/IUserRepository";
 import { IAuthService } from "@/application/ports/services/IAuthService";
 import { IEmailService } from "@/application/ports/services/IEmailService";
+import { OtpRepository } from "@/infra/db/mongoose/repositories/OtpRepository";
+import { IOtpRepository } from "@/application/ports/repositories/IOtpRepository";
 // import { TaskRepository } from "@/infra/db/mongoose/repositories/TaskRepository";
 // import { ITaskRepository } from "@/application/ports/repositories/ITaskRepository";
 // import { IAccessKeyRepository } from "@/application/ports/repositories/IAccessKeyRepository";
@@ -22,6 +24,10 @@ export const coreModule = new ContainerModule((options) => {
   options
     .bind<IUserRepository>(TYPES.UserRepository)
     .to(UserRepository)
+    .inSingletonScope();
+  options
+    .bind<IOtpRepository>(TYPES.OtpRepository)
+    .to(OtpRepository)
     .inSingletonScope();
   // options
   //   .bind<IAccessKeyRepository>(TYPES.AccessKeyRepository)

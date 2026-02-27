@@ -7,5 +7,5 @@ import { TaskController } from "@/interface-adapters/controllers/task/TaskContro
 
 export const controllerModule = new ContainerModule((options) => {
   options.bind<AuthController>(TYPES.AuthController).to(AuthController);
-  options.bind<TaskController>(TYPES.TaskController).to(TaskController);
+  // options.bind<TaskController>(TYPES.TaskController).to(TaskController);
 });
