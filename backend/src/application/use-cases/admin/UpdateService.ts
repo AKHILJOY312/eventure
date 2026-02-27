@@ -14,11 +14,11 @@ import { Service } from "@/entities/Service";
 export class UpdateService implements IUpdateService {
   constructor(
     @inject(TYPES.ServiceRepository)
-    private serviceRepo: IServiceRepository,
+    private _serviceRepo: IServiceRepository,
   ) {}
 
   async execute(dto: UpdateServiceDto): Promise<ServiceResponseDTO> {
-    const service = await this.serviceRepo.findByIdAndAdmin(
+    const service = await this._serviceRepo.findByIdAndAdmin(
       dto.serviceId,
       dto.adminId,
     );
@@ -42,7 +42,7 @@ export class UpdateService implements IUpdateService {
       service.updateAvailableDates(dto.availableDates.map((d) => new Date(d)));
     }
 
-    await this.serviceRepo.update(service);
+    await this._serviceRepo.update(service);
 
     return this.toResponseDTO(service);
   }

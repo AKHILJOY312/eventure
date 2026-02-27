@@ -13,7 +13,7 @@ import { toServiceResponseDTO } from "@/application/mappers/service.mapper";
 export class FilterServicesByAvailability implements IFilterServicesByAvailability {
   constructor(
     @inject(TYPES.ServiceRepository)
-    private serviceRepo: IServiceRepository,
+    private _serviceRepo: IServiceRepository,
   ) {}
 
   async execute(dto: FilterByAvailabilityDto): Promise<PaginatedServicesDTO> {
@@ -30,7 +30,7 @@ export class FilterServicesByAvailability implements IFilterServicesByAvailabili
 
     const skip = (page - 1) * limit;
 
-    const { services, total } = await this.serviceRepo.findAvailablePaginated({
+    const { services, total } = await this._serviceRepo.findAvailablePaginated({
       date: dto.date,
       category: dto.category,
       location: dto.location,

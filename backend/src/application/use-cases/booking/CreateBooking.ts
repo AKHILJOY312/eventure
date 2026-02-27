@@ -14,21 +14,21 @@ import { ICreateBooking } from "@/application/ports/use-cases/booking/IBookingUs
 export class CreateBooking implements ICreateBooking {
   constructor(
     @inject(TYPES.BookingRepository)
-    private bookingRepo: IBookingRepository,
+    private _bookingRepo: IBookingRepository,
 
     @inject(TYPES.ServiceRepository)
-    private serviceRepo: IServiceRepository,
+    private _serviceRepo: IServiceRepository,
   ) {}
 
   async execute(dto: CreateBookingDto): Promise<BookingResponseDTO> {
-    const service = await this.serviceRepo.findById(dto.serviceId);
+    const service = await this._serviceRepo.findById(dto.serviceId);
 
     if (!service) {
       throw new NotFoundError("SERVICE_NOT_FOUND");
     }
 
     // Check overlap
-    const overlapping = await this.bookingRepo.findOverlappingBookings({
+    const overlapping = await this._bookingRepo.findOverlappingBookings({
       serviceId: dto.serviceId,
       startDate: dto.startDate,
       endDate: dto.endDate,
@@ -46,7 +46,7 @@ export class CreateBooking implements ICreateBooking {
       service.pricePerDay,
     );
 
-    const saved = await this.bookingRepo.create(booking);
+    const saved = await this._bookingRepo.create(booking);
 
     return {
       id: saved.id!,

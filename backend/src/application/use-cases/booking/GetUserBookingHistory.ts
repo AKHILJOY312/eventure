@@ -11,7 +11,7 @@ import { IGetUserBookingHistory } from "@/application/ports/use-cases/booking/IB
 export class GetUserBookingHistory implements IGetUserBookingHistory {
   constructor(
     @inject(TYPES.BookingRepository)
-    private bookingRepo: IBookingRepository,
+    private _bookingRepo: IBookingRepository,
   ) {}
 
   async execute(dto: GetUserBookingHistoryDto): Promise<PaginatedBookingsDTO> {
@@ -19,7 +19,7 @@ export class GetUserBookingHistory implements IGetUserBookingHistory {
     const limit = dto.limit ?? 10;
     const skip = (page - 1) * limit;
 
-    const { bookings, total } = await this.bookingRepo.findByUserIdPaginated({
+    const { bookings, total } = await this._bookingRepo.findByUserIdPaginated({
       userId: dto.userId,
       status: dto.status,
       skip,

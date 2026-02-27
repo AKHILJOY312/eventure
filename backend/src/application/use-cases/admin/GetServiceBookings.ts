@@ -13,8 +13,8 @@ import { IGetServiceBookings } from "@/application/ports/use-cases/admin/IAdminU
 @injectable()
 export class GetServiceBookings implements IGetServiceBookings {
   constructor(
-    @inject(TYPES.ServiceRepository) private serviceRepo: IServiceRepository,
-    @inject(TYPES.BookingRepository) private bookingRepo: IBookingRepository,
+    @inject(TYPES.ServiceRepository) private _serviceRepo: IServiceRepository,
+    @inject(TYPES.BookingRepository) private _bookingRepo: IBookingRepository,
   ) {}
 
   async execute(
@@ -25,7 +25,7 @@ export class GetServiceBookings implements IGetServiceBookings {
     const skip = (page - 1) * limit;
 
     // Atomic ownership check
-    const service = await this.serviceRepo.findByIdAndAdmin(
+    const service = await this._serviceRepo.findByIdAndAdmin(
       dto.serviceId,
       dto.adminId,
     );
@@ -33,16 +33,15 @@ export class GetServiceBookings implements IGetServiceBookings {
       throw new NotFoundError("SERVICE_NOT_FOUND_OR_NOT_OWNED");
     }
 
-    const { bookings, total } = await this.bookingRepo.findByServiceIdPaginated(
-      {
+    const { bookings, total } =
+      await this._bookingRepo.findByServiceIdPaginated({
         serviceId: dto.serviceId,
         status: dto.status,
         skip,
         limit,
         sortBy: "createdAt",
         sortOrder: "desc",
-      },
-    );
+      });
 
     const data = bookings.map((b) => ({
       bookingId: b.id!,

@@ -14,7 +14,7 @@ import { ICreateService } from "@/application/ports/use-cases/admin/IAdminUseCas
 @injectable()
 export class CreateService implements ICreateService {
   constructor(
-    @inject(TYPES.ServiceRepository) private serviceRepo: IServiceRepository,
+    @inject(TYPES.ServiceRepository) private _serviceRepo: IServiceRepository,
   ) {}
 
   async execute(dto: CreateServiceDto): Promise<ServiceResponseDTO> {
@@ -38,7 +38,7 @@ export class CreateService implements ICreateService {
       bookedDates: [],
     });
 
-    const created = await this.serviceRepo.create(service);
+    const created = await this._serviceRepo.create(service);
 
     return this.toResponseDTO(created);
   }

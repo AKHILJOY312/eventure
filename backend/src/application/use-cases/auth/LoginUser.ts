@@ -11,19 +11,22 @@ import { IUserRepository } from "@/application/ports/repositories/IUserRepositor
 @injectable()
 export class LoginUser implements ILoginUser {
   constructor(
-    @inject(TYPES.UserRepository) private userRepo: IUserRepository,
-    @inject(TYPES.AuthService) private auth: IAuthService,
+    @inject(TYPES.UserRepository) private _userRepo: IUserRepository,
+    @inject(TYPES.AuthService) private _authSvc: IAuthService,
   ) {}
 
   async execute(
     email: string,
     password: string,
   ): Promise<LoginUserResponseDTO> {
-    const user = await this.userRepo.findByEmail(email);
+    const user = await this._userRepo.findByEmail(email);
     if (!user) throw new UnauthorizedError("INVALID_CREDENTIALS");
 
     // 1. Verify Password
-    const isMatch = await this.auth.comparePassword(password, user.password);
+    const isMatch = await this._authSvc.comparePassword(
+      password,
+      user.password,
+    );
     if (!isMatch) throw new UnauthorizedError("INVALID_CREDENTIALS");
 
     // 2. Check Verification Status
@@ -32,12 +35,12 @@ export class LoginUser implements ILoginUser {
     }
 
     // 3. Generate Tokens
-    const accessToken = this.auth.generateAccessToken(
+    const accessToken = this._authSvc.generateAccessToken(
       user.id!,
       user.email,
       user.securityStamp!,
     );
-    const refreshToken = this.auth.generateRefreshToken(user.id!);
+    const refreshToken = this._authSvc.generateRefreshToken(user.id!);
 
     return {
       accessToken,

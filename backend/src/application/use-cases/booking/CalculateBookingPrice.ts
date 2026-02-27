@@ -12,13 +12,13 @@ import { ICalculateBookingPrice } from "@/application/ports/use-cases/booking/IB
 export class CalculateBookingPrice implements ICalculateBookingPrice {
   constructor(
     @inject(TYPES.ServiceRepository)
-    private serviceRepo: IServiceRepository,
+    private _serviceRepo: IServiceRepository,
   ) {}
 
   async execute(
     dto: CalculateBookingPriceDto,
   ): Promise<CalculateBookingPriceResponseDTO> {
-    const service = await this.serviceRepo.findById(dto.serviceId);
+    const service = await this._serviceRepo.findById(dto.serviceId);
 
     if (!service) {
       throw new NotFoundError("SERVICE_NOT_FOUND");

@@ -10,11 +10,11 @@ import { IUserRepository } from "@/application/ports/repositories/IUserRepositor
 @injectable()
 export class GetMe implements IGetMe {
   constructor(
-    @inject(TYPES.UserRepository) private userRepo: IUserRepository,
+    @inject(TYPES.UserRepository) private _userRepo: IUserRepository,
   ) {}
 
   async execute(userId: string): Promise<GetMeResponseDTO> {
-    const user = await this.userRepo.findById(userId);
+    const user = await this._userRepo.findById(userId);
 
     if (!user) {
       throw new NotFoundError("USER_NOT_FOUND");

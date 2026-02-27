@@ -11,13 +11,13 @@ import { IVerifyEmail } from "@/application/ports/use-cases/auth/interfaces";
 @injectable()
 export class VerifyEmail implements IVerifyEmail {
   constructor(
-    @inject(TYPES.UserRepository) private userRepo: IUserRepository,
-    @inject(TYPES.OtpRepository) private otpRepo: IOtpRepository,
+    @inject(TYPES.UserRepository) private _userRepo: IUserRepository,
+    @inject(TYPES.OtpRepository) private _otpRepo: IOtpRepository,
   ) {}
 
   async execute(dto: VerifyEmailDto): Promise<{ message: string }> {
     // 1. Find user
-    const user = await this.userRepo.findByEmail(dto.email);
+    const user = await this._userRepo.findByEmail(dto.email);
     if (!user) {
       throw new BadRequestError("INVALID_EMAIL_OR_CODE");
     }
@@ -27,7 +27,7 @@ export class VerifyEmail implements IVerifyEmail {
     }
 
     // 2. Find active OTP for email verification
-    const otpRecord = await this.otpRepo.findActive(
+    const otpRecord = await this._otpRepo.findActive(
       user.id!,
       "email-verification",
     );
@@ -41,7 +41,7 @@ export class VerifyEmail implements IVerifyEmail {
 
     if (!isValid) {
       // You may want to save the updated attempts count
-      await this.otpRepo.update(otpRecord);
+      await this._otpRepo.update(otpRecord);
 
       if (otpRecord.isExpired()) {
         throw new BadRequestError("VERIFICATION_CODE_EXPIRED");
@@ -57,8 +57,8 @@ export class VerifyEmail implements IVerifyEmail {
 
     // 5. Persist changes
     await Promise.all([
-      this.userRepo.update(user),
-      this.otpRepo.update(otpRecord), // marks as consumed
+      this._userRepo.update(user),
+      this._otpRepo.update(otpRecord), // marks as consumed
     ]);
 
     return { message: "ACCOUNT_ACTIVATED_SUCCESSFULLY" };

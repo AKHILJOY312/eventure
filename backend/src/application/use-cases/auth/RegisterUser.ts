@@ -17,10 +17,10 @@ import { IRegisterUser } from "@/application/ports/use-cases/auth/interfaces";
 @injectable()
 export class RegisterUser implements IRegisterUser {
   constructor(
-    @inject(TYPES.UserRepository) private userRepo: IUserRepository,
-    @inject(TYPES.OtpRepository) private otpRepo: IOtpRepository,
-    @inject(TYPES.AuthService) private auth: IAuthService,
-    @inject(TYPES.EmailService) private email: IEmailService,
+    @inject(TYPES.UserRepository) private _userRepo: IUserRepository,
+    @inject(TYPES.OtpRepository) private _otpRepo: IOtpRepository,
+    @inject(TYPES.AuthService) private _authSvc: IAuthService,
+    @inject(TYPES.EmailService) private _emailSvc: IEmailService,
   ) {}
 
   async execute(
@@ -32,15 +32,15 @@ export class RegisterUser implements IRegisterUser {
     }
 
     // 2. Check for existing user
-    const existing = await this.userRepo.findByEmail(dto.email);
+    const existing = await this._userRepo.findByEmail(dto.email);
     if (existing) {
       // Optional: if not verified → could allow re-registration or just say already exists
       throw new BadRequestError("USER_ALREADY_EXISTS");
     }
 
     // 3. Create domain entities
-    const hashedPassword = await this.auth.hashContent(dto.password);
-    const securityStamp = this.auth.generateToken(); // e.g. crypto.randomUUID()
+    const hashedPassword = await this._authSvc.hashContent(dto.password);
+    const securityStamp = this._authSvc.generateToken(); // e.g. crypto.randomUUID()
 
     const user = new User({
       name: dto.name.trim(),
@@ -53,8 +53,8 @@ export class RegisterUser implements IRegisterUser {
     });
 
     // 4. Generate OTP (plain text for email, but we'll hash it for storage)
-    const plainOtp = this.auth.generateOtp(); // e.g. "483921" (6 digits)
-    const hashedOtp = await this.auth.hashContent(plainOtp); // ← important!
+    const plainOtp = this._authSvc.generateOtp(); // e.g. "483921" (6 digits)
+    const hashedOtp = await this._authSvc.hashContent(plainOtp); // ← important!
 
     const otpEntity = Otp.createNew(
       user.id!, // will be set after create if using auto-id
@@ -64,16 +64,16 @@ export class RegisterUser implements IRegisterUser {
     );
 
     // 5. Persist (ideally in a transaction — see note below)
-    const createdUser = await this.userRepo.create(user);
+    const createdUser = await this._userRepo.create(user);
 
     // Now that user has real ID (if DB generated it)
 
     otpEntity.setUserId(createdUser.id!); // important if ID was generated
 
-    await this.otpRepo.create(otpEntity);
+    await this._otpRepo.create(otpEntity);
 
     // 6. Send email with **plain** OTP (never send hashed value)
-    await this.email.sendEmailOtp(
+    await this._emailSvc.sendEmailOtp(
       createdUser.email,
       plainOtp, // plain code
       createdUser.name, // optional: personalize email

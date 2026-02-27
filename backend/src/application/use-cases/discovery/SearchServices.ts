@@ -12,7 +12,7 @@ import { toServiceResponseDTO } from "@/application/mappers/service.mapper";
 export class SearchServices implements ISearchServices {
   constructor(
     @inject(TYPES.ServiceRepository)
-    private serviceRepo: IServiceRepository,
+    private _serviceRepo: IServiceRepository,
   ) {}
 
   async execute(dto: SearchServicesDto): Promise<PaginatedServicesDTO> {
@@ -33,7 +33,7 @@ export class SearchServices implements ISearchServices {
 
     const skip = (page - 1) * limit;
 
-    const { services, total } = await this.serviceRepo.searchPaginated({
+    const { services, total } = await this._serviceRepo.searchPaginated({
       keyword: dto.keyword,
       category: dto.category,
       location: dto.location,
