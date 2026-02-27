@@ -3,7 +3,7 @@ import { TYPES } from "../types";
 
 import { IUserRepository } from "@/application/ports/repositories/IUserRepository";
 
-import { createProtectMiddleware } from "@/infra/web/express/middleware/protect";
+import { createProtectMiddleware } from "@/infra/web/express/middleware/authentication";
 
 export const middlewareModule = new ContainerModule((options) => {
   options

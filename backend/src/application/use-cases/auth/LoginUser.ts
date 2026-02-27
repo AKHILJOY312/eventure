@@ -38,6 +38,7 @@ export class LoginUser implements ILoginUser {
     const accessToken = this._authSvc.generateAccessToken(
       user.id!,
       user.email,
+      user.role,
       user.securityStamp!,
     );
     const refreshToken = this._authSvc.generateRefreshToken(user.id!);
@@ -49,6 +50,7 @@ export class LoginUser implements ILoginUser {
         id: user.id!,
         name: user.name,
         email: user.email,
+        role: user.role,
         isVerified: user.isVerified,
       },
     };

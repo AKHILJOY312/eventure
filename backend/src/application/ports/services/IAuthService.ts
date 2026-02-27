@@ -1,3 +1,5 @@
+import { UserRole } from "@/entities/User";
+
 export interface IAuthService {
   /** Encryption */
   hashContent(plain: string): Promise<string>;
@@ -5,7 +7,12 @@ export interface IAuthService {
 
   /** Token Management */
 
-  generateAccessToken(userId: string, email: string, stamp: string): string;
+  generateAccessToken(
+    userId: string,
+    email: string,
+    role: UserRole,
+    stamp: string,
+  ): string;
   generateRefreshToken(userId: string): string;
   verifyRefreshToken(token: string): { id: string } | null;
 

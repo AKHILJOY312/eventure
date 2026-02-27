@@ -29,6 +29,7 @@ export class GetMe implements IGetMe {
         id: user.id!,
         name: user.name,
         email: user.email,
+        role: user.role,
         isVerified: user.isVerified,
         createdAt: user.createdAt || new Date(),
       },

@@ -29,6 +29,7 @@ export class RefreshToken implements IRefreshToken {
     const accessToken = this._authSvc.generateAccessToken(
       user.id!,
       user.email,
+      user.role,
       user.securityStamp || "",
     );
 
