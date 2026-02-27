@@ -23,13 +23,18 @@ const TYPES = {
   VerifyEmail: Symbol.for("VerifyEmail"),
   GetMe: Symbol.for("GetMe"),
 
-  // // Use Cases - Tasks
-  // CreateTask: Symbol.for("CreateTask"),
-  // ListTasks: Symbol.for("ListTasks"),
-  // UpdateTask: Symbol.for("UpdateTask"),
-  // DeleteTask: Symbol.for("DeleteTask"),
-  // MoveTaskPhase: Symbol.for("MoveTaskPhase"),
-  // GetTaskStats: Symbol.for("GetTaskStats"),
+  //admin
+  CreateService: Symbol.for("CreateService"),
+  DeleteService: Symbol.for("DeleteService"),
+  GetServiceBookings: Symbol.for("GetServiceBookings"),
+  UpdateService: Symbol.for("UpdateService"),
+
+  //Booking
+  CalculateBookingPrice: Symbol.for("CalculateBookingPrice"),
+  CreateBooking: Symbol.for("CreateBooking"),
+  GetUserBookingHistory: Symbol.for("GetUserBookingHistory"),
+
+  //Discovery
 };
 
 export { TYPES };

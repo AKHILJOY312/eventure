@@ -5,27 +5,28 @@ import {
   toBookingEntity,
 } from "../models/BookingModel";
 
-import { IBookingRepository } from "@/application/ports/repositories/IBookingRepository";
+import {
+  IBookingRepository,
+  PaginatedBookingResult,
+  SortOrder,
+  BookingSortableFields,
+} from "@/application/ports/repositories/IBookingRepository";
+
 import { Booking, BookingStatus } from "@/entities/Booking";
 
-type SortableBookingFields =
-  | "createdAt"
-  | "startDate"
-  | "endDate"
-  | "totalPrice"
-  | "status";
-
 export class BookingRepository implements IBookingRepository {
+  // ---------------------------
+  // Mapping
+  // ---------------------------
+
   private toDomain(doc: HydratedDocument<BookingDoc>): Booking {
     return toBookingEntity(doc);
   }
 
   private toPersistence(booking: Booking): Partial<BookingDoc> {
     return {
-      userId: booking.userId ? new Types.ObjectId(booking.userId) : undefined,
-      serviceId: booking.serviceId
-        ? new Types.ObjectId(booking.serviceId)
-        : undefined,
+      userId: new Types.ObjectId(booking.userId),
+      serviceId: new Types.ObjectId(booking.serviceId),
       startDate: booking.startDate,
       endDate: booking.endDate,
       totalPrice: booking.totalPrice,
@@ -33,29 +34,49 @@ export class BookingRepository implements IBookingRepository {
     };
   }
 
+  // ---------------------------
+  // Create
+  // ---------------------------
+
   async create(booking: Booking): Promise<Booking> {
     const doc = await BookingModel.create(this.toPersistence(booking));
     return this.toDomain(doc);
   }
+
+  // ---------------------------
+  // Update
+  // ---------------------------
 
   async update(booking: Booking): Promise<void> {
     if (!booking.id) {
       throw new Error("Cannot update booking without id");
     }
 
-    await BookingModel.updateOne(
-      { _id: new Types.ObjectId(booking.id), isDeleted: { $ne: true } },
-      { $set: this.toPersistence(booking) },
+    const result = await BookingModel.updateOne(
+      {
+        _id: new Types.ObjectId(booking.id),
+        isDeleted: { $ne: true },
+      },
+      {
+        $set: this.toPersistence(booking),
+      },
     );
+
+    if (result.matchedCount === 0) {
+      throw new Error("Booking not found or already deleted");
+    }
   }
 
-  async softDelete(bookingId: string): Promise<void> {
-    if (!Types.ObjectId.isValid(bookingId)) {
-      return;
-    }
+  // ---------------------------
+  // Soft Delete
+  // ---------------------------
 
-    await BookingModel.updateOne(
-      { _id: new Types.ObjectId(bookingId) },
+  async softDelete(bookingId: string): Promise<void> {
+    const result = await BookingModel.updateOne(
+      {
+        _id: new Types.ObjectId(bookingId),
+        isDeleted: { $ne: true },
+      },
       {
         $set: {
           isDeleted: true,
@@ -63,21 +84,30 @@ export class BookingRepository implements IBookingRepository {
         },
       },
     );
+
+    if (result.matchedCount === 0) {
+      throw new Error("Booking not found or already deleted");
+    }
   }
 
-  async findById(id: string): Promise<Booking | null> {
-    if (!Types.ObjectId.isValid(id)) return null;
+  // ---------------------------
+  // Find By ID
+  // ---------------------------
 
+  async findById(id: string): Promise<Booking | null> {
     const doc = await BookingModel.findOne({
       _id: new Types.ObjectId(id),
       isDeleted: { $ne: true },
     });
+
     return doc ? this.toDomain(doc) : null;
   }
 
-  async findByServiceId(serviceId: string): Promise<Booking[]> {
-    if (!Types.ObjectId.isValid(serviceId)) return [];
+  // ---------------------------
+  // Find By Service (non-paginated)
+  // ---------------------------
 
+  async findByServiceId(serviceId: string): Promise<Booking[]> {
     const docs = await BookingModel.find({
       serviceId: new Types.ObjectId(serviceId),
       isDeleted: { $ne: true },
@@ -85,14 +115,19 @@ export class BookingRepository implements IBookingRepository {
 
     return docs.map((doc) => this.toDomain(doc));
   }
+
+  // ---------------------------
+  // Find By Service (paginated)
+  // ---------------------------
+
   async findByServiceIdPaginated(params: {
     serviceId: string;
     status?: BookingStatus;
     skip?: number;
     limit?: number;
-    sortBy?: SortableBookingFields;
-    sortOrder?: "asc" | "desc";
-  }): Promise<{ bookings: Booking[]; total: number }> {
+    sortBy?: BookingSortableFields;
+    sortOrder?: SortOrder;
+  }): Promise<PaginatedBookingResult> {
     const {
       serviceId,
       status,
@@ -102,29 +137,84 @@ export class BookingRepository implements IBookingRepository {
       sortOrder = "desc",
     } = params;
 
-    if (!Types.ObjectId.isValid(serviceId)) {
-      return { bookings: [], total: 0 };
-    }
-
     const filter: FilterQuery<BookingDoc> = {
       serviceId: new Types.ObjectId(serviceId),
       isDeleted: { $ne: true },
       ...(status ? { status } : {}),
     };
 
-    const sort: Record<SortableBookingFields, 1 | -1> = {
-      createdAt: 0 as 1 | -1,
-      startDate: 0 as 1 | -1,
-      endDate: 0 as 1 | -1,
-      totalPrice: 0 as 1 | -1,
-      status: 0 as 1 | -1,
-    };
-
-    sort[sortBy] = sortOrder === "asc" ? 1 : -1;
+    const sortDirection = sortOrder === "asc" ? 1 : -1;
 
     const [docs, total] = await Promise.all([
       BookingModel.find(filter)
-        .sort({ [sortBy]: sortOrder === "asc" ? 1 : -1 })
+        .sort({ [sortBy]: sortDirection })
+        .skip(skip)
+        .limit(limit),
+      BookingModel.countDocuments(filter),
+    ]);
+
+    return {
+      bookings: docs.map((doc) => this.toDomain(doc)),
+      total,
+    };
+  }
+
+  // ---------------------------
+  // Find Overlapping Bookings
+  // ---------------------------
+
+  async findOverlappingBookings(params: {
+    serviceId: string;
+    startDate: Date;
+    endDate: Date;
+  }): Promise<Booking[]> {
+    const { serviceId, startDate, endDate } = params;
+
+    const filter: FilterQuery<BookingDoc> = {
+      serviceId: new Types.ObjectId(serviceId),
+      isDeleted: { $ne: true },
+      status: { $ne: "cancelled" }, // cancelled bookings do not block availability
+      startDate: { $lte: endDate },
+      endDate: { $gte: startDate },
+    };
+
+    const docs = await BookingModel.find(filter);
+
+    return docs.map((doc) => this.toDomain(doc));
+  }
+
+  // ---------------------------
+  // Find By User (paginated)
+  // ---------------------------
+
+  async findByUserIdPaginated(params: {
+    userId: string;
+    status?: BookingStatus;
+    skip?: number;
+    limit?: number;
+    sortBy?: BookingSortableFields;
+    sortOrder?: SortOrder;
+  }): Promise<PaginatedBookingResult> {
+    const {
+      userId,
+      status,
+      skip = 0,
+      limit = 10,
+      sortBy = "createdAt",
+      sortOrder = "desc",
+    } = params;
+
+    const filter: FilterQuery<BookingDoc> = {
+      userId: new Types.ObjectId(userId),
+      isDeleted: { $ne: true },
+      ...(status ? { status } : {}),
+    };
+
+    const sortDirection = sortOrder === "asc" ? 1 : -1;
+
+    const [docs, total] = await Promise.all([
+      BookingModel.find(filter)
+        .sort({ [sortBy]: sortDirection })
         .skip(skip)
         .limit(limit),
       BookingModel.countDocuments(filter),
