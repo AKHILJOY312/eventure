@@ -54,7 +54,7 @@ app.use("/api", routes);
 
 // WebSocket
 
-createSocketServer(server, container);
+// createSocketServer(server, container);
 
 app.use(globalErrorHandler);
 

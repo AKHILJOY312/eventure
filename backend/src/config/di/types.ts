@@ -1,9 +1,8 @@
 const TYPES = {
   // Repositories
   UserRepository: Symbol.for("UserRepository"),
-  AccessKeyRepository: Symbol.for("AccessKeyRepository"),
-  TaskRepository: Symbol.for("TaskRepository"),
   OtpRepository: Symbol.for("OtpRepository"),
+
   ProtectMiddleware: Symbol.for("ProtectMiddleware"),
   // Services
   AuthService: Symbol.for("AuthService"),
@@ -11,7 +10,7 @@ const TYPES = {
 
   //controller
   AuthController: Symbol.for("AuthController"),
-  TaskController: Symbol.for("TaskController"),
+  // TaskController: Symbol.for("TaskController"),
 
   // Use Cases - Auth
   RegisterUser: Symbol.for("RegisterUser"),
@@ -21,13 +20,13 @@ const TYPES = {
   VerifyEmail: Symbol.for("VerifyEmail"),
   GetMe: Symbol.for("GetMe"),
 
-  // Use Cases - Tasks
-  CreateTask: Symbol.for("CreateTask"),
-  ListTasks: Symbol.for("ListTasks"),
-  UpdateTask: Symbol.for("UpdateTask"),
-  DeleteTask: Symbol.for("DeleteTask"),
-  MoveTaskPhase: Symbol.for("MoveTaskPhase"),
-  GetTaskStats: Symbol.for("GetTaskStats"),
+  // // Use Cases - Tasks
+  // CreateTask: Symbol.for("CreateTask"),
+  // ListTasks: Symbol.for("ListTasks"),
+  // UpdateTask: Symbol.for("UpdateTask"),
+  // DeleteTask: Symbol.for("DeleteTask"),
+  // MoveTaskPhase: Symbol.for("MoveTaskPhase"),
+  // GetTaskStats: Symbol.for("GetTaskStats"),
 };
 
 export { TYPES };

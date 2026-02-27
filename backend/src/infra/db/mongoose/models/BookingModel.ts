@@ -11,6 +11,7 @@ export interface BookingDoc extends Document {
   startDate: Date;
   endDate: Date;
   totalPrice: number;
+  isDeleted: boolean;
   status: BookingStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -44,7 +45,10 @@ const bookingSchema = new Schema<BookingDoc>(
       type: Number,
       required: true, // calculated before save
     },
-
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
     status: {
       type: String,
       enum: ["pending", "confirmed", "cancelled"],
