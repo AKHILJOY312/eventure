@@ -51,7 +51,9 @@ export class Otp {
   setId(id: string): void {
     this._props.id = id;
   }
-
+  setUserId(userId: string): void {
+    this._props.userId = userId;
+  }
   // ===== BUSINESS METHODS =====
 
   /**

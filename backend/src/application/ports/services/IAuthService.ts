@@ -1,6 +1,6 @@
 export interface IAuthService {
   /** Encryption */
-  hashPassword(plain: string): Promise<string>;
+  hashContent(plain: string): Promise<string>;
   comparePassword(plain: string, hash: string): Promise<boolean>;
 
   /** Token Management */

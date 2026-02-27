@@ -15,7 +15,7 @@ export class JwtAuthService implements IAuthService {
   ) {}
 
   /** Encryption */
-  async hashPassword(plain: string): Promise<string> {
+  async hashContent(plain: string): Promise<string> {
     return bcrypt.hash(plain, 10);
   }
 

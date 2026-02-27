@@ -43,11 +43,6 @@ export class UserRepository implements IUserRepository {
     return doc ? this.toDomain(doc) : null;
   }
 
-  async findByOtpCode(otpCode: string): Promise<User | null> {
-    const doc = await UserModel.findOne({ otpCode });
-    return doc ? this.toDomain(doc) : null;
-  }
-
   async delete(userId: string): Promise<void> {
     await UserModel.deleteOne({ _id: userId });
   }

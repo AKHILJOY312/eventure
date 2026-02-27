@@ -3,7 +3,7 @@ const TYPES = {
   UserRepository: Symbol.for("UserRepository"),
   AccessKeyRepository: Symbol.for("AccessKeyRepository"),
   TaskRepository: Symbol.for("TaskRepository"),
-
+  OtpRepository: Symbol.for("OtpRepository"),
   ProtectMiddleware: Symbol.for("ProtectMiddleware"),
   // Services
   AuthService: Symbol.for("AuthService"),

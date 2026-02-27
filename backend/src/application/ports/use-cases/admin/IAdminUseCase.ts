@@ -1,4 +1,11 @@
-// ===================== INTERFACES =====================
+import {
+  CreateServiceDto,
+  DeleteServiceDto,
+  GetServiceBookingsDto,
+  PaginatedServiceBookingsDTO,
+  UpdateServiceDto,
+} from "@/application/dto/admin.dtos";
+import { ServiceResponseDTO } from "@/application/dto/discover.dtos";
 
 export interface ICreateService {
   execute(dto: CreateServiceDto): Promise<ServiceResponseDTO>;

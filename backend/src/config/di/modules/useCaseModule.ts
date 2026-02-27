@@ -36,10 +36,10 @@ export const useCaseModule = new ContainerModule((options) => {
   options.bind<IGetMe>(TYPES.GetMe).to(GetMe);
 
   //Tasks
-  options.bind<ICreateTask>(TYPES.CreateTask).to(CreateTask);
-  options.bind<IUpdateTask>(TYPES.UpdateTask).to(UpdateTask);
-  options.bind<IMoveTaskPhase>(TYPES.MoveTaskPhase).to(MoveTaskPhase);
-  options.bind<IDeleteTask>(TYPES.DeleteTask).to(DeleteTask);
-  options.bind<IListTasks>(TYPES.ListTasks).to(ListTasks);
-  options.bind<IGetTaskStats>(TYPES.GetTaskStats).to(GetTaskStats);
+  // options.bind<ICreateTask>(TYPES.CreateTask).to(CreateTask);
+  // options.bind<IUpdateTask>(TYPES.UpdateTask).to(UpdateTask);
+  // options.bind<IMoveTaskPhase>(TYPES.MoveTaskPhase).to(MoveTaskPhase);
+  // options.bind<IDeleteTask>(TYPES.DeleteTask).to(DeleteTask);
+  // options.bind<IListTasks>(TYPES.ListTasks).to(ListTasks);
+  // options.bind<IGetTaskStats>(TYPES.GetTaskStats).to(GetTaskStats);
 });
