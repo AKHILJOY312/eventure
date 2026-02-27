@@ -2,7 +2,10 @@ const TYPES = {
   // Repositories
   UserRepository: Symbol.for("UserRepository"),
   OtpRepository: Symbol.for("OtpRepository"),
+  BookingRepository: Symbol.for("BookingRepository"),
+  ServiceRepository: Symbol.for("ServiceRepository"),
 
+  //middlewares
   ProtectMiddleware: Symbol.for("ProtectMiddleware"),
   // Services
   AuthService: Symbol.for("AuthService"),

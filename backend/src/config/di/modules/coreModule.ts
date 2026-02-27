@@ -3,6 +3,9 @@ import { TYPES } from "../types"; // Adjust path if needed
 
 // Repositories
 import { UserRepository } from "@/infra/db/mongoose/repositories/UserRepository";
+import { OtpRepository } from "@/infra/db/mongoose/repositories/OtpRepository";
+import { BookingRepository } from "@/infra/db/mongoose/repositories/BookingRepository";
+import { ServiceRepository } from "@/infra/db/mongoose/repositories/ServiceRepository";
 
 // Services
 import { JwtAuthService } from "@/infra/auth/JwtAuthService";
@@ -12,12 +15,9 @@ import { NodemailerEmailService } from "@/infra/email/NodemailerEmailService";
 import { IUserRepository } from "@/application/ports/repositories/IUserRepository";
 import { IAuthService } from "@/application/ports/services/IAuthService";
 import { IEmailService } from "@/application/ports/services/IEmailService";
-import { OtpRepository } from "@/infra/db/mongoose/repositories/OtpRepository";
 import { IOtpRepository } from "@/application/ports/repositories/IOtpRepository";
-// import { TaskRepository } from "@/infra/db/mongoose/repositories/TaskRepository";
-// import { ITaskRepository } from "@/application/ports/repositories/ITaskRepository";
-// import { IAccessKeyRepository } from "@/application/ports/repositories/IAccessKeyRepository";
-// import { AccessKeyRepository } from "@/infra/db/mongoose/repositories/AccessKeyRepository";
+import { IBookingRepository } from "@/application/ports/repositories/IBookingRepository";
+import { IServiceRepository } from "@/application/ports/repositories/IServiceRepository";
 
 export const coreModule = new ContainerModule((options) => {
   // Repositories (singletons)
@@ -29,14 +29,16 @@ export const coreModule = new ContainerModule((options) => {
     .bind<IOtpRepository>(TYPES.OtpRepository)
     .to(OtpRepository)
     .inSingletonScope();
-  // options
-  //   .bind<IAccessKeyRepository>(TYPES.AccessKeyRepository)
-  //   .to(AccessKeyRepository);
-  // options
-  //   .bind<ITaskRepository>(TYPES.TaskRepository)
-  //   .to(TaskRepository)
-  //   .inSingletonScope();
+  options
+    .bind<IBookingRepository>(TYPES.BookingRepository)
+    .to(BookingRepository)
+    .inSingletonScope();
+  options
+    .bind<IServiceRepository>(TYPES.ServiceRepository)
+    .to(ServiceRepository)
+    .inSingletonScope();
 
+  //services
   options
     .bind<IAuthService>(TYPES.AuthService)
     .to(JwtAuthService)
@@ -46,29 +48,3 @@ export const coreModule = new ContainerModule((options) => {
     .to(NodemailerEmailService)
     .inSingletonScope();
 });
-
-// src/infrastructure/inversify.config.ts
-
-// // Bind concrete repo to ALL its interfaces
-// container.bind<BookingRepository>(TYPES.BookingRepository)
-//   .to(BookingRepository)
-//   .inSingletonScope();
-
-// // Query interface
-// container.bind<IBookingQueryRepository>(TYPES.IBookingQueryRepository)
-//   .toService(TYPES.BookingRepository); // Same instance
-
-// // Command interface
-// container.bind<IBookingCommandRepository>(TYPES.IBookingCommandRepository)
-//   .toService(TYPES.BookingRepository); // Same instance
-
-// // Combined interface (for convenience)
-// container.bind<IBookingRepository>(TYPES.IBookingRepository)
-//   .toService(TYPES.BookingRepository);
-
-//   class BookingService {
-//   constructor(
-//     @inject(TYPES.IBookingRepository)
-//     private bookingRepo: IBookingRepository // ✅ Has everything
-//   ) {}
-// }
