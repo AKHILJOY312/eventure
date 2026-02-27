@@ -1,5 +1,5 @@
 // src/infrastructure/repositories/ServiceRepository.ts
-import { HydratedDocument, Types } from "mongoose";
+import { FilterQuery, HydratedDocument, Types } from "mongoose";
 import {
   ServiceModel,
   ServiceDoc,
@@ -86,5 +86,40 @@ export class ServiceRepository implements IServiceRepository {
     });
 
     return doc ? this.toDomain(doc) : null;
+  }
+
+  async findByIdAndAdmin(id: string, adminId: string): Promise<Service | null> {
+    if (!Types.ObjectId.isValid(id) || !Types.ObjectId.isValid(adminId)) {
+      return null;
+    }
+
+    const filter: FilterQuery<ServiceDoc> = {
+      _id: new Types.ObjectId(id),
+      adminId: new Types.ObjectId(adminId),
+      isDeleted: { $ne: true },
+    };
+
+    const doc = await ServiceModel.findOne(filter);
+
+    return doc ? this.toDomain(doc) : null;
+  }
+
+  async findByAdminId(
+    adminId: string,
+    options?: { skipDeleted?: boolean },
+  ): Promise<Service[]> {
+    if (!Types.ObjectId.isValid(adminId)) return [];
+
+    const filter: FilterQuery<ServiceDoc> = {
+      adminId: new Types.ObjectId(adminId),
+    };
+
+    if (options?.skipDeleted !== false) {
+      filter.isDeleted = { $ne: true };
+    }
+
+    const docs = await ServiceModel.find(filter).sort({ createdAt: -1 });
+
+    return docs.map((doc) => this.toDomain(doc));
   }
 }

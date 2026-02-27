@@ -1,4 +1,4 @@
-import { HydratedDocument, Types } from "mongoose";
+import { FilterQuery, HydratedDocument, Types } from "mongoose";
 import {
   BookingModel,
   BookingDoc,
@@ -6,7 +6,14 @@ import {
 } from "../models/BookingModel";
 
 import { IBookingRepository } from "@/application/ports/repositories/IBookingRepository";
-import { Booking } from "@/entities/Booking";
+import { Booking, BookingStatus } from "@/entities/Booking";
+
+type SortableBookingFields =
+  | "createdAt"
+  | "startDate"
+  | "endDate"
+  | "totalPrice"
+  | "status";
 
 export class BookingRepository implements IBookingRepository {
   private toDomain(doc: HydratedDocument<BookingDoc>): Booking {
@@ -77,5 +84,55 @@ export class BookingRepository implements IBookingRepository {
     }).sort({ startDate: 1 });
 
     return docs.map((doc) => this.toDomain(doc));
+  }
+  async findByServiceIdPaginated(params: {
+    serviceId: string;
+    status?: BookingStatus;
+    skip?: number;
+    limit?: number;
+    sortBy?: SortableBookingFields;
+    sortOrder?: "asc" | "desc";
+  }): Promise<{ bookings: Booking[]; total: number }> {
+    const {
+      serviceId,
+      status,
+      skip = 0,
+      limit = 10,
+      sortBy = "createdAt",
+      sortOrder = "desc",
+    } = params;
+
+    if (!Types.ObjectId.isValid(serviceId)) {
+      return { bookings: [], total: 0 };
+    }
+
+    const filter: FilterQuery<BookingDoc> = {
+      serviceId: new Types.ObjectId(serviceId),
+      isDeleted: { $ne: true },
+      ...(status ? { status } : {}),
+    };
+
+    const sort: Record<SortableBookingFields, 1 | -1> = {
+      createdAt: 0 as 1 | -1,
+      startDate: 0 as 1 | -1,
+      endDate: 0 as 1 | -1,
+      totalPrice: 0 as 1 | -1,
+      status: 0 as 1 | -1,
+    };
+
+    sort[sortBy] = sortOrder === "asc" ? 1 : -1;
+
+    const [docs, total] = await Promise.all([
+      BookingModel.find(filter)
+        .sort({ [sortBy]: sortOrder === "asc" ? 1 : -1 })
+        .skip(skip)
+        .limit(limit),
+      BookingModel.countDocuments(filter),
+    ]);
+
+    return {
+      bookings: docs.map((doc) => this.toDomain(doc)),
+      total,
+    };
   }
 }
