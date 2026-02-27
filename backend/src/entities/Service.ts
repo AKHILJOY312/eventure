@@ -98,44 +98,37 @@ export class Service {
     this._props.availableDates = uniqueDates;
     this._props.updatedAt = new Date();
   }
-  isAvailableOn(date: Date): boolean {
-    const checkDate = new Date(date).toDateString();
+  // isAvailableOn(date: Date): boolean {
+  //   const checkDate = new Date(date).toDateString();
 
-    // If explicitly booked, not available
-    const isBooked = this._props.bookedDates?.some(
-      (d) => new Date(d).toDateString() === checkDate,
-    );
-    if (isBooked) return false;
+  //   // If explicitly booked, not available
+  //   const isBooked = this._props.bookedDates?.some(
+  //     (d) => new Date(d).toDateString() === checkDate,
+  //   );
+  //   if (isBooked) return false;
 
-    // If availableDates is set, must be in that list
-    if (this._props.availableDates?.length) {
-      return this._props.availableDates.some(
-        (d) => new Date(d).toDateString() === checkDate,
-      );
-    }
+  //   // If availableDates is set, must be in that list
+  //   if (this._props.availableDates?.length) {
+  //     return this._props.availableDates.some(
+  //       (d) => new Date(d).toDateString() === checkDate,
+  //     );
+  //   }
 
-    // If no restrictions, assume available
-    return true;
-  }
+  //   // If no restrictions, assume available
+  //   return true;
+  // }
 
-  /**
-   * Book the service for a specific date (domain validation only)
-   * Returns true if booking succeeded, false if date unavailable
-   */
-  bookDate(date: Date): boolean {
-    if (!this.isAvailableOn(date)) return false;
+  // bookDate(date: Date): boolean {
+  //   if (!this.isAvailableOn(date)) return false;
 
-    const checkDate = new Date(date);
-    if (!this._props.bookedDates) this._props.bookedDates = [];
+  //   const checkDate = new Date(date);
+  //   if (!this._props.bookedDates) this._props.bookedDates = [];
 
-    this._props.bookedDates.push(checkDate);
-    this._props.updatedAt = new Date();
-    return true;
-  }
+  //   this._props.bookedDates.push(checkDate);
+  //   this._props.updatedAt = new Date();
+  //   return true;
+  // }
 
-  /**
-   * Cancel a booking for a specific date
-   */
   cancelBooking(date: Date): boolean {
     const checkDate = new Date(date).toDateString();
     const initialLength = this._props.bookedDates?.length || 0;

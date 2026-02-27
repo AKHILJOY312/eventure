@@ -7,7 +7,7 @@ import {
 } from "../models/ServiceModel";
 
 import { IServiceRepository } from "@/application/ports/repositories/IServiceRepository";
-import { Service } from "@/entities/Service";
+import { Service, ServiceCategory } from "@/entities/Service";
 
 export class ServiceRepository implements IServiceRepository {
   // ────────────────────────────────────────────────
@@ -121,5 +121,109 @@ export class ServiceRepository implements IServiceRepository {
     const docs = await ServiceModel.find(filter).sort({ createdAt: -1 });
 
     return docs.map((doc) => this.toDomain(doc));
+  }
+
+  async findAll(params: {
+    category?: ServiceCategory;
+    location?: string;
+  }): Promise<Service[]> {
+    const filter: FilterQuery<ServiceDoc> = {
+      isDeleted: { $ne: true },
+    };
+
+    if (params.category) {
+      filter.category = params.category;
+    }
+    if (params.location) {
+      filter.location = { $regex: params.location, $options: "i" };
+    }
+    const docs = await ServiceModel.find(filter).sort({ createAt: -1 });
+    return docs.map((doc) => this.toDomain(doc));
+  }
+
+  async findAvailablePaginated(params: {
+    date: Date;
+    category?: ServiceCategory;
+    location?: string;
+    skip: number;
+    limit: number;
+  }): Promise<{ services: Service[]; total: number }> {
+    const filter: FilterQuery<ServiceDoc> = {
+      isDeleted: { $ne: true },
+      availableDates: params.date,
+      bookedDates: { $ne: params.date },
+    };
+    if (params.category) {
+      filter.category = params.category;
+    }
+    if (params.location) {
+      filter.location = { $regex: params.location, $options: "i" };
+    }
+
+    const [docs, total] = await Promise.all([
+      ServiceModel.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(params.skip)
+        .limit(params.limit),
+      ServiceModel.countDocuments(filter),
+    ]);
+
+    return {
+      services: docs.map((doc) => this.toDomain(doc)),
+      total,
+    };
+  }
+
+  async searchPaginated(params: {
+    keyword?: string;
+    category?: string;
+    location?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    skip: number;
+    limit: number;
+  }): Promise<{ services: Service[]; total: number }> {
+    const filter: FilterQuery<ServiceDoc> = {
+      isDeleted: { $ne: true },
+    };
+
+    if (params.keyword) {
+      filter.$text = { $search: params.keyword };
+    }
+
+    if (params.category) {
+      filter.category = params.category;
+    }
+
+    if (params.location) {
+      filter.location = { $regex: params.location, $options: "i" };
+    }
+
+    if (params.minPrice !== undefined || params.maxPrice !== undefined) {
+      filter.pricePerDay = {};
+      if (params.minPrice !== undefined) {
+        filter.pricePerDay.$gte = params.minPrice;
+      }
+      if (params.maxPrice !== undefined) {
+        filter.pricePerDay.$lte = params.maxPrice;
+      }
+    }
+
+    const [docs, total] = await Promise.all([
+      ServiceModel.find(filter)
+        .sort(
+          params.keyword
+            ? { score: { $meta: "textScore" } }
+            : { createdAt: -1 },
+        )
+        .skip(params.skip)
+        .limit(params.limit),
+      ServiceModel.countDocuments(filter),
+    ]);
+
+    return {
+      services: docs.map((doc) => this.toDomain(doc)),
+      total,
+    };
   }
 }
