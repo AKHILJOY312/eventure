@@ -30,5 +30,5 @@ logs/
 # package-lock.json
 gitAuto.sh
 taskpem.pem
-frontend
+
 trash.md
