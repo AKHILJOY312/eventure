@@ -1,6 +1,7 @@
 // ===================== CREATE =====================
 
 import { ServiceCategory } from "@/entities/Service";
+import { BookingStatus } from "@/entities/Booking";
 
 export interface CreateServiceDto {
   title: string;
@@ -62,7 +63,7 @@ export interface PaginationDto {
 export interface GetServiceBookingsDto extends PaginationDto {
   serviceId: string;
   adminId: string; // ownership validation
-  status?: "pending" | "confirmed" | "cancelled";
+  status?: BookingStatus;
 }
 
 export interface ServiceBookingResponseDTO {
@@ -71,7 +72,7 @@ export interface ServiceBookingResponseDTO {
   startDate: Date;
   endDate: Date;
   totalPrice: number;
-  status: "pending" | "confirmed" | "cancelled";
+  status: BookingStatus;
   createdAt?: Date;
 }
 

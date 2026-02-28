@@ -1,9 +1,16 @@
-export type ServiceCategory =
-  | "Venue"
-  | "Hotel"
-  | "Caterer"
-  | "Cameraman"
-  | "DJ";
+// export type ServiceCategory =
+//   | "Venue"
+//   | "Hotel"
+//   | "Caterer"
+//   | "Cameraman"
+//   | "DJ";
+export enum ServiceCategory {
+  Venue = "Venue",
+  Hotel = "Hotel",
+  Caterer = "Caterer",
+  Cameraman = "Cameraman",
+  DJ = "DJ",
+}
 
 export interface ServiceProps {
   id?: string;

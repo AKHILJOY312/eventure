@@ -21,7 +21,6 @@ export interface RegisterUserDto {
   email: string;
   password: string;
   confirmPassword: string;
-  accessKey: string; // The 6-digit unique registration string
 }
 
 export interface VerifyEmailDto {

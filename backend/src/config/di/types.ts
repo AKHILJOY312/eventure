@@ -35,6 +35,9 @@ const TYPES = {
   GetUserBookingHistory: Symbol.for("GetUserBookingHistory"),
 
   //Discovery
+  SearchServices: Symbol.for("SearchServices"),
+  FilterServicesByAvailability: Symbol.for("FilterServicesByAvailability"),
+  GetServiceDetails: Symbol.for("GetServiceDetails"),
 };
 
 export { TYPES };

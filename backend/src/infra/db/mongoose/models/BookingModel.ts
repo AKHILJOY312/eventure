@@ -1,8 +1,6 @@
 // src/infrastructure/models/BookingModel.ts
 import mongoose, { Document, Schema, Types } from "mongoose";
-import { Booking, BookingProps } from "@/entities/Booking";
-
-export type BookingStatus = "pending" | "confirmed" | "cancelled";
+import { Booking, BookingProps, BookingStatus } from "@/entities/Booking";
 
 export interface BookingDoc extends Document {
   _id: Types.ObjectId;
@@ -51,8 +49,8 @@ const bookingSchema = new Schema<BookingDoc>(
     },
     status: {
       type: String,
-      enum: ["pending", "confirmed", "cancelled"],
-      default: "confirmed",
+      enum: Object.values(BookingStatus),
+      default: BookingStatus.Pending,
     },
   },
   { timestamps: true },
@@ -72,7 +70,7 @@ export const toBookingEntity = (doc: BookingDoc): Booking => {
     startDate: doc.startDate,
     endDate: doc.endDate,
     totalPrice: doc.totalPrice,
-    status: doc.status,
+    status: doc.status as BookingStatus,
     createdAt: doc.createdAt,
   };
 

@@ -1,5 +1,8 @@
-export type BookingStatus = "pending" | "confirmed" | "cancelled";
-
+export enum BookingStatus {
+  Pending = "pending",
+  Confirmed = "confirmed",
+  Cancelled = "cancelled",
+}
 export interface BookingProps {
   id?: string;
   userId: string; // Reference to User.id (string, not ObjectId)
@@ -117,24 +120,24 @@ export class Booking {
         `INVALID_TRANSITION: Cannot confirm booking with status "${this._props.status}"`,
       );
     }
-    this._props.status = "confirmed";
+    this._props.status = BookingStatus.Confirmed;
     this._props.updatedAt = new Date();
   }
 
   /**
    * Cancel a booking (only pending or confirmed can be cancelled)
    */
-  cancel(reason?: string): void {
-    if (this._props.status === "cancelled") {
-      throw new Error("INVALID_TRANSITION: Booking is already cancelled");
-    }
-    if (this._props.status === "confirmed" && this.isActive) {
-      // Optional: Add business rule - cannot cancel active confirmed bookings
-      // throw new Error("CANNOT_CANCEL_ACTIVE_BOOKING");
-    }
-    this._props.status = "cancelled";
-    this._props.updatedAt = new Date();
-  }
+  // cancel(reason?: string): void {
+  //   if (this._props.status === "cancelled") {
+  //     throw new Error("INVALID_TRANSITION: Booking is already cancelled");
+  //   }
+  //   if (this._props.status === "confirmed" && this.isActive) {
+  //     // Optional: Add business rule - cannot cancel active confirmed bookings
+  //     // throw new Error("CANNOT_CANCEL_ACTIVE_BOOKING");
+  //   }
+  //   this._props.status = "cancelled";
+  //   this._props.updatedAt = new Date();
+  // }
 
   /**
    * Update booking dates (only allowed for pending bookings)
@@ -222,7 +225,7 @@ export class Booking {
       startDate,
       endDate,
       totalPrice,
-      status: "pending",
+      status: BookingStatus.Pending,
     });
   }
 }

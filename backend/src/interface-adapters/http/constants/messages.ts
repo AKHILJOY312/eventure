@@ -26,24 +26,8 @@ export const ERROR_MESSAGES = {
   VALIDATION_ERROR: "Not valid input",
 };
 
-export const CHANNEL_MESSAGES = {
-  WRONG_DATA: "Invalid channel data",
+export const BOOKING_MESSAGES = {
+  BOOKING_CREATED: "Booking created successfully",
+  PRICE_CALCULATED: "Price calculated successfully",
+  BOOKINGS_FETCHED: "Bookings retrieved successfully",
 } as const;
-
-export const PLAN_MESSAGES = {
-  PLAN_CREATED: "Plan created successfully",
-  PLAN_UPDATED: "Plan updated successfully",
-  PLAN_DELETED: "Plan deleted",
-  ID_NEEDED: "Plan Id required",
-  PLAN_UPDATE_FAILED: "Failed to update plan",
-} as const;
-
-export const SUB_MESSAGE = {
-  ORDER_CREATED: "Order created successfully",
-  PLAN_ID_REQUIRED: "planId is required",
-  UPGRADE_FAILED: "Upgrade failed",
-} as const;
-
-export const PROJECT_MESSAGE = {
-  INVALID_DATA: "Invalid project data",
-};

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { inject, injectable } from "inversify";
 import { TYPES } from "@/config/di/types";
-import { HTTP_STATUS } from "../../http/constants/httpStatus";
+import { HTTP_STATUS } from "../http/constants/httpStatus";
 import { AUTH_MESSAGES } from "@/interface-adapters/http/constants/messages";
 import {
   ValidationError,
