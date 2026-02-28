@@ -12,6 +12,6 @@ router.use((req, res, next) => {
 
 router.use("/auth", getAuthRoutes(container));
 
-router.use("/tasks", getTasksRoutes(container));
+// router.use("/tasks", getTasksRoutes(container));
 
 export default router;

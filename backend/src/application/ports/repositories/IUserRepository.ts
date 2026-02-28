@@ -8,7 +8,6 @@ export interface IUserRepository {
   delete(userId: string): Promise<void>;
 
   // Security & Verification specific
-  findByOtpCode(otpCode: string): Promise<User | null>;
   updateVerificationStatus(userId: string, isVerified: boolean): Promise<void>;
   updateSecurityStamp(userId: string, stamp: string): Promise<void>;
 }

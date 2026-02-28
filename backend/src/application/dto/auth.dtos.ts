@@ -1,9 +1,12 @@
 // src/application/dto/authDtos.ts
 
+type UserRoles = "admin" | "user";
+
 export interface AuthUserDTO {
   id: string;
   name: string;
   email: string;
+  role: UserRoles;
   isVerified: boolean;
 }
 

@@ -3,7 +3,7 @@ import { Container } from "inversify";
 import { TYPES } from "@/config/di/types";
 import { AuthController } from "@/interface-adapters/controllers/auth/AuthController";
 import { asyncHandler } from "../handler/asyncHandler";
-import { createProtectMiddleware } from "../middleware/protect";
+import { createProtectMiddleware } from "../middleware/authentication";
 
 export function getAuthRoutes(container: Container): Router {
   const router = Router();

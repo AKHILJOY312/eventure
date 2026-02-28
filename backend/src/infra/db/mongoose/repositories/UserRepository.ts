@@ -14,7 +14,8 @@ export class UserRepository implements IUserRepository {
       name: user.name,
       email: user.email,
       password: user.password,
-      otpCode: user.otpCode || null,
+      role: user.role,
+
       isVerified: user.isVerified,
       securityStamp: user.securityStamp,
     };
@@ -39,11 +40,6 @@ export class UserRepository implements IUserRepository {
 
   async findByEmail(email: string): Promise<User | null> {
     const doc = await UserModel.findOne({ email: email.toLowerCase() });
-    return doc ? this.toDomain(doc) : null;
-  }
-
-  async findByOtpCode(otpCode: string): Promise<User | null> {
-    const doc = await UserModel.findOne({ otpCode });
     return doc ? this.toDomain(doc) : null;
   }
 

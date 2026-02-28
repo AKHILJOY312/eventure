@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 dotenv.config();
 
 import routes from "@/infra/web/express/routes/index";
-import { connectDB } from "../../config/database";
+import { connectDB } from "../../config/database.config";
 import { setupGoogleStrategy } from "../passport/googleStrategy";
 import passport from "passport";
 import { HTTP_STATUS } from "@/interface-adapters/http/constants/httpStatus";
@@ -54,7 +54,7 @@ app.use("/api", routes);
 
 // WebSocket
 
-createSocketServer(server, container);
+// createSocketServer(server, container);
 
 app.use(globalErrorHandler);
 

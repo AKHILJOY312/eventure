@@ -7,10 +7,12 @@ import {
 } from "@/interface-adapters/http/constants/messages";
 import { HTTP_STATUS } from "@/interface-adapters/http/constants/httpStatus";
 import { ENV } from "@/config/env.config";
+import { UserRole } from "@/entities/User";
 
 interface JwtPayload {
   id: string;
   email: string;
+  role: UserRole;
   stamp: string;
 }
 
@@ -19,6 +21,7 @@ declare module "express-serve-static-core" {
     user?: {
       id: string;
       name: string;
+      role: string;
       email: string;
     };
   }
@@ -59,6 +62,7 @@ export const createProtectMiddleware = (userRepo: IUserRepository) => {
         id: user.id!,
         name: user.name,
         email: user.email,
+        role: user.role,
       };
 
       next();

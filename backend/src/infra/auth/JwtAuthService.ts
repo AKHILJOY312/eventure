@@ -7,6 +7,7 @@ import { TYPES } from "@/config/di/types";
 import { IAuthService } from "@/application/ports/services/IAuthService";
 import { ENV } from "@/config/env.config";
 import { IUserRepository } from "@/application/ports/repositories/IUserRepository";
+import { UserRole } from "@/entities/User";
 
 @injectable()
 export class JwtAuthService implements IAuthService {
@@ -15,7 +16,7 @@ export class JwtAuthService implements IAuthService {
   ) {}
 
   /** Encryption */
-  async hashPassword(plain: string): Promise<string> {
+  async hashContent(plain: string): Promise<string> {
     return bcrypt.hash(plain, 10);
   }
 
@@ -24,14 +25,19 @@ export class JwtAuthService implements IAuthService {
   }
 
   /** Token Management */
-  generateAccessToken(userId: string, email: string, stamp: string): string {
+  generateAccessToken(
+    userId: string,
+    email: string,
+    role: UserRole,
+    stamp: string,
+  ): string {
     const options: SignOptions = {
       expiresIn: ENV.JWT.ACCESS_EXPIRY as SignOptions["expiresIn"],
     };
 
     // We embed the securityStamp (stamp) into the payload
     return jwt.sign(
-      { id: userId, email, stamp },
+      { id: userId, email, role, stamp },
       ENV.JWT.ACCESS_SECRET!,
       options,
     );

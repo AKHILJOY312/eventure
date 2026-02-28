@@ -3,7 +3,7 @@ import { Container } from "inversify";
 import { TYPES } from "@/config/di/types";
 import { asyncHandler } from "../handler/asyncHandler";
 import { TaskController } from "@/interface-adapters/controllers/task/TaskController";
-import { createProtectMiddleware } from "@/infra/web/express/middleware/protect";
+import { createProtectMiddleware } from "@/infra/web/express/middleware/authentication";
 
 export function getTasksRoutes(container: Container): Router {
   const router = Router();

@@ -21,6 +21,7 @@ export interface ServiceDoc extends Document {
   adminId: Types.ObjectId;
   availableDates?: Date[];
   bookedDates?: Date[];
+  isDeleted?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -76,9 +77,16 @@ const serviceSchema = new Schema<ServiceDoc>(
       type: [Date],
       default: [],
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );
+serviceSchema.index({ adminId: 1, isDeleted: 1 });
+serviceSchema.index({ category: 1, location: 1 });
+serviceSchema.index({ title: "text", description: "text", location: "text" });
 
 export const ServiceModel = mongoose.model<ServiceDoc>(
   "Service",

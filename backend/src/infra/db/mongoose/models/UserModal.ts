@@ -8,7 +8,6 @@ export interface UserDoc extends Document {
   email: string;
   password: string;
   role: "user" | "admin";
-  otpCode?: string | null;
   isVerified: boolean;
   securityStamp: string;
   createdAt: Date;
@@ -37,11 +36,6 @@ const userSchema = new Schema<UserDoc>(
       default: "user",
     },
 
-    otpCode: {
-      type: String,
-      default: null,
-    },
-
     isVerified: {
       type: Boolean,
       default: false,
@@ -65,11 +59,10 @@ export const toUserEntity = (doc: UserDoc): User => {
     email: doc.email,
     password: doc.password,
     role: doc.role,
-    otpCode: doc.otpCode ?? undefined,
     isVerified: doc.isVerified,
     securityStamp: doc.securityStamp,
     createdAt: doc.createdAt,
+    updatedAt: doc.updatedAt,
   };
-
   return new User(props);
 };

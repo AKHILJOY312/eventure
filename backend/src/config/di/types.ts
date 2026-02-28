@@ -1,9 +1,11 @@
 const TYPES = {
   // Repositories
   UserRepository: Symbol.for("UserRepository"),
-  AccessKeyRepository: Symbol.for("AccessKeyRepository"),
-  TaskRepository: Symbol.for("TaskRepository"),
+  OtpRepository: Symbol.for("OtpRepository"),
+  BookingRepository: Symbol.for("BookingRepository"),
+  ServiceRepository: Symbol.for("ServiceRepository"),
 
+  //middlewares
   ProtectMiddleware: Symbol.for("ProtectMiddleware"),
   // Services
   AuthService: Symbol.for("AuthService"),
@@ -11,7 +13,7 @@ const TYPES = {
 
   //controller
   AuthController: Symbol.for("AuthController"),
-  TaskController: Symbol.for("TaskController"),
+  // TaskController: Symbol.for("TaskController"),
 
   // Use Cases - Auth
   RegisterUser: Symbol.for("RegisterUser"),
@@ -21,13 +23,18 @@ const TYPES = {
   VerifyEmail: Symbol.for("VerifyEmail"),
   GetMe: Symbol.for("GetMe"),
 
-  // Use Cases - Tasks
-  CreateTask: Symbol.for("CreateTask"),
-  ListTasks: Symbol.for("ListTasks"),
-  UpdateTask: Symbol.for("UpdateTask"),
-  DeleteTask: Symbol.for("DeleteTask"),
-  MoveTaskPhase: Symbol.for("MoveTaskPhase"),
-  GetTaskStats: Symbol.for("GetTaskStats"),
+  //admin
+  CreateService: Symbol.for("CreateService"),
+  DeleteService: Symbol.for("DeleteService"),
+  GetServiceBookings: Symbol.for("GetServiceBookings"),
+  UpdateService: Symbol.for("UpdateService"),
+
+  //Booking
+  CalculateBookingPrice: Symbol.for("CalculateBookingPrice"),
+  CreateBooking: Symbol.for("CreateBooking"),
+  GetUserBookingHistory: Symbol.for("GetUserBookingHistory"),
+
+  //Discovery
 };
 
 export { TYPES };
