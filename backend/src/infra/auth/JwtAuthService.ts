@@ -20,7 +20,7 @@ export class JwtAuthService implements IAuthService {
     return bcrypt.hash(plain, 10);
   }
 
-  async comparePassword(plain: string, hash: string): Promise<boolean> {
+  async compareContent(plain: string, hash: string): Promise<boolean> {
     return bcrypt.compare(plain, hash);
   }
 

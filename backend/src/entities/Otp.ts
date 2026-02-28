@@ -2,19 +2,19 @@ export type OtpPurpose = "email-verification" | "password-reset" | "2fa-login";
 
 export interface OtpProps {
   id?: string;
-  userId: string; // Reference to User.id
-  code: string; // Hashed OTP code
+  userId: string;
+  code: string;
   purpose: OtpPurpose;
   expiresAt: Date;
   isConsumed: boolean;
   createdAt?: Date;
-  attempts: number; // Track failed attempts
-  maxAttempts?: number; // Default: 3
+  attempts: number;
+  maxAttempts?: number;
 }
 
 export class Otp {
   private _props: OtpProps;
-  private static readonly DEFAULT_TTL_MS = 10 * 60 * 1000; // 10 minutes
+  private static readonly DEFAULT_TTL_MS = 10 * 60 * 1000;
   private static readonly DEFAULT_MAX_ATTEMPTS = 3;
 
   constructor(props: OtpProps) {
@@ -62,16 +62,10 @@ export class Otp {
   }
   // ===== BUSINESS METHODS =====
 
-  /**
-   * Validate OTP code and mark as consumed if valid
-   */
-  validateAndConsume(inputCode: string): boolean {
+  validateAndConsume(isValid: boolean): boolean {
     if (this._props.isConsumed) return false;
     if (this.isExpired()) return false;
     if (this._props.attempts >= this._props.maxAttempts!) return false;
-
-    // Compare hashed codes (use bcrypt/argon2 in real app)
-    const isValid = inputCode === this._props.code; //  Hash in production!
 
     if (!isValid) {
       this._props.attempts += 1;
@@ -79,35 +73,23 @@ export class Otp {
     }
 
     this._props.isConsumed = true;
-    this._props.attempts = 0; // Reset for potential reuse
+    this._props.attempts = 0;
     return true;
   }
 
-  /**
-   * Check if OTP has expired
-   */
   isExpired(): boolean {
     return new Date() > this._props.expiresAt;
   }
 
-  /**
-   * Extend expiration time (e.g., user requested resend)
-   */
   extend(ttlMs: number = Otp.DEFAULT_TTL_MS): void {
     this._props.expiresAt = new Date(Date.now() + ttlMs);
-    this._props.attempts = 0; // Reset attempts on resend
+    this._props.attempts = 0;
   }
 
-  /**
-   * Invalidate OTP manually (e.g., after successful login)
-   */
   invalidate(): void {
     this._props.isConsumed = true;
   }
 
-  /**
-   * Domain factory: Create new OTP with defaults
-   */
   static createNew(
     userId: string,
     code: string,

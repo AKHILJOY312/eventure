@@ -23,10 +23,7 @@ export class LoginUser implements ILoginUser {
     if (!user) throw new UnauthorizedError("INVALID_CREDENTIALS");
 
     // 1. Verify Password
-    const isMatch = await this._authSvc.comparePassword(
-      password,
-      user.password,
-    );
+    const isMatch = await this._authSvc.compareContent(password, user.password);
     if (!isMatch) throw new UnauthorizedError("INVALID_CREDENTIALS");
 
     // 2. Check Verification Status
