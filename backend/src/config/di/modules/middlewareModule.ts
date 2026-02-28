@@ -10,7 +10,6 @@ export const middlewareModule = new ContainerModule((options) => {
     .bind(TYPES.ProtectMiddleware)
     .toDynamicValue((context) => {
       const userRepo = context.get<IUserRepository>(TYPES.UserRepository);
-
       return createProtectMiddleware(userRepo);
     })
     .inSingletonScope();

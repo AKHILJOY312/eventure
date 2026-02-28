@@ -92,9 +92,4 @@ export class BookingController {
 
     res.status(HTTP_STATUS.OK).json(result);
   };
-
-  // Bonus: possible future endpoint (optional)
-  // GET /bookings/:id
-  // PATCH /bookings/:id/cancel
-  // etc.
 }

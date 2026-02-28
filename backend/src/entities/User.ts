@@ -1,4 +1,7 @@
-export type UserRole = "user" | "admin";
+export enum UserRole {
+  USER = "user",
+  ADMIN = "admin",
+}
 
 export interface UserProps {
   id?: string;
@@ -83,6 +86,6 @@ export class User {
   }
 
   isAdmin(): boolean {
-    return this._props.role === "admin";
+    return this._props.role === UserRole.ADMIN;
   }
 }

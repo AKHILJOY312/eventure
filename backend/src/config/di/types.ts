@@ -13,7 +13,9 @@ const TYPES = {
 
   //controller
   AuthController: Symbol.for("AuthController"),
-  // TaskController: Symbol.for("TaskController"),
+  AdminController: Symbol.for("AdminController"),
+  BookingController: Symbol.for("BookingController"),
+  DiscoverController: Symbol.for("DiscoverController"),
 
   // Use Cases - Auth
   RegisterUser: Symbol.for("RegisterUser"),

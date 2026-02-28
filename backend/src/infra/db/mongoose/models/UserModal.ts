@@ -1,5 +1,5 @@
 // src/infrastructure/models/UserModel.ts
-import { User, UserProps } from "@/entities/User";
+import { User, UserProps, UserRole } from "@/entities/User";
 import mongoose, { Document, Schema, Types } from "mongoose";
 
 export interface UserDoc extends Document {
@@ -7,7 +7,7 @@ export interface UserDoc extends Document {
   name: string;
   email: string;
   password: string;
-  role: "user" | "admin";
+  role: UserRole;
   isVerified: boolean;
   securityStamp: string;
   createdAt: Date;
@@ -32,8 +32,8 @@ const userSchema = new Schema<UserDoc>(
 
     role: {
       type: String,
-      enum: ["user", "admin"],
-      default: "user",
+      enum: Object.values(UserRole),
+      default: UserRole.USER,
     },
 
     isVerified: {
@@ -58,7 +58,7 @@ export const toUserEntity = (doc: UserDoc): User => {
     name: doc.name,
     email: doc.email,
     password: doc.password,
-    role: doc.role,
+    role: doc.role as UserRole,
     isVerified: doc.isVerified,
     securityStamp: doc.securityStamp,
     createdAt: doc.createdAt,

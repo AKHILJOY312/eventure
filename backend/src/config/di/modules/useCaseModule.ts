@@ -30,6 +30,14 @@ import {
 import { CalculateBookingPrice } from "@/application/use-cases/booking/CalculateBookingPrice";
 import { CreateBooking } from "@/application/use-cases/booking/CreateBooking";
 import { GetUserBookingHistory } from "@/application/use-cases/booking/GetUserBookingHistory";
+import {
+  IFilterServicesByAvailability,
+  IGetServiceDetails,
+  ISearchServices,
+} from "@/application/ports/use-cases/discover/IDiscoverUseCase";
+import { FilterServicesByAvailability } from "@/application/use-cases/discovery/FilterServicesByAvailability";
+import { GetServiceDetails } from "@/application/use-cases/discovery/GetServiceDetails";
+import { SearchServices } from "@/application/use-cases/discovery/SearchServices";
 
 export const useCaseModule = new ContainerModule((options) => {
   // Regular Auth Use Cases
@@ -55,4 +63,13 @@ export const useCaseModule = new ContainerModule((options) => {
   options
     .bind<IGetUserBookingHistory>(TYPES.GetUserBookingHistory)
     .to(GetUserBookingHistory);
+
+  //Discovery
+  options
+    .bind<IFilterServicesByAvailability>(TYPES.FilterServicesByAvailability)
+    .to(FilterServicesByAvailability);
+  options
+    .bind<IGetServiceDetails>(TYPES.GetServiceDetails)
+    .to(GetServiceDetails);
+  options.bind<ISearchServices>(TYPES.SearchServices).to(SearchServices);
 });
