@@ -13,7 +13,7 @@ export const createService = (data: {
   location: string;
   contactDetails?: string;
   imageUrl?: string;
-  availableDates?: Date[];
+  availableDates?: string[];
 }) => {
   return api.post("/admin/services", data);
 };
@@ -28,7 +28,7 @@ export const updateService = (
     location?: string;
     contactDetails?: string;
     imageUrl?: string;
-    availableDates?: Date[];
+    availableDates?: string[];
   },
 ) => {
   return api.patch(`/admin/services/${serviceId}`, data);
