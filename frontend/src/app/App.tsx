@@ -6,7 +6,7 @@ import { AppRoutes } from "@/routes/AppRoutes";
 const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <SocketInitializer />
+      {/* <SocketInitializer /> */}
       <AppRoutes />
     </BrowserRouter>
   );

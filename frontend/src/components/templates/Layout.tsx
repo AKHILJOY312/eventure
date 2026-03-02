@@ -13,6 +13,8 @@ import { COLORS, MONO_FONT } from "@/styles/theme";
 import TopNav from "./TopNav";
 import { useUi } from "@/hooks/useUi";
 import CreateTaskModal from "../molecules/CreateTaskModal";
+import { AnimatePresence } from "framer-motion";
+import { PageTransition } from "./PageTransition";
 
 const Layout = () => {
   const location = useLocation();
@@ -84,7 +86,11 @@ const Layout = () => {
 
       <Box sx={{ flexGrow: 1, overflowY: "auto", p: 4 }}>
         <Container maxWidth={false}>
-          <Outlet />
+          <AnimatePresence mode="wait">
+            <PageTransition key={location.pathname}>
+              <Outlet />
+            </PageTransition>
+          </AnimatePresence>
         </Container>
       </Box>
       <CreateTaskModal />

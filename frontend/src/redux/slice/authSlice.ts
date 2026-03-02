@@ -49,6 +49,7 @@ const authSlice = createSlice({
         state.user = {
           id: "",
           name: "",
+          role: "user",
           email: action.payload.email,
         };
       })
