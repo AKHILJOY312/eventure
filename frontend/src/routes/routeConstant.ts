@@ -9,8 +9,8 @@ export const PATHS = {
   },
 
   USER: {
-    DASHBOARD: "/dashboard",
-    STATS: "/stats",
+    DASHBOARD: "/bookings",
+    DISCOVER: "/discover",
   },
 
   ADMIN: {

@@ -12,7 +12,6 @@ import { Outlet, useLocation } from "react-router-dom";
 import { COLORS, MONO_FONT } from "@/styles/theme";
 import TopNav from "./TopNav";
 import { useUi } from "@/hooks/useUi";
-import CreateTaskModal from "../molecules/CreateTaskModal";
 import { AnimatePresence } from "framer-motion";
 import { PageTransition } from "./PageTransition";
 
@@ -93,7 +92,6 @@ const Layout = () => {
           </AnimatePresence>
         </Container>
       </Box>
-      <CreateTaskModal />
     </Box>
   );
 };

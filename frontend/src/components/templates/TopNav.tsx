@@ -4,22 +4,24 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 import { COLORS, MONO_FONT } from "@/styles/theme";
 import { useAuth } from "@/hooks/useAuth";
-
+import { PATHS } from "@/routes/routeConstant";
 const TopNav: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
 
-  const { isAuthenticated, logout } = useAuth();
-
-  const currentTab = location.pathname === "/stats" ? "stats" : "board";
+  const isAdmin = user?.role === "admin";
+  const isUser = user?.role === "user";
+  const navBg = isAdmin ? COLORS.adminPrimary : COLORS.primaryUI;
+  const accent = isAdmin ? COLORS.adminAccent : COLORS.accent;
 
   const handleLogout = async () => {
     await logout();
-    navigate("/login");
+    navigate(PATHS.AUTH.LOGIN);
   };
 
   return (
-    <Box sx={{ bgcolor: COLORS.primaryUI, color: "white" }}>
+    <Box sx={{ bgcolor: navBg, color: "white" }}>
       <Container
         maxWidth={false}
         sx={{
@@ -30,33 +32,34 @@ const TopNav: React.FC = () => {
         }}
       >
         <Typography
-          onClick={() => navigate("/")}
+          onClick={() => navigate(PATHS.HOME)}
           sx={{ cursor: "pointer", fontFamily: MONO_FONT }}
         >
-          Pixel_Task
+          Event_ure
         </Typography>
 
-        <Tabs
-          value={currentTab}
-          onChange={(_, newValue) =>
-            navigate(newValue === "stats" ? "/stats" : "/")
-          }
-          textColor="inherit"
-        >
-          <Tab value="board" label="BOARD" />
-          <Tab value="stats" label="STATS" />
-        </Tabs>
+        {isUser && (
+          <Tabs
+            value={location.pathname}
+            onChange={(_, newValue) => navigate(newValue)}
+            textColor="inherit"
+            slotProps={{
+              indicator: {
+                sx: {
+                  backgroundColor: accent,
+                },
+              },
+            }}
+          >
+            <Tab value={PATHS.USER.DASHBOARD} label="BOOKINGS" />
+            <Tab value={PATHS.USER.DISCOVER} label="DISCOVER" />
+          </Tabs>
+        )}
 
         <Box>
-          {!isAuthenticated ? (
-            <Button onClick={() => navigate("/login")} color="inherit">
-              LOGIN
-            </Button>
-          ) : (
-            <Button onClick={handleLogout} color="inherit">
-              LOGOUT
-            </Button>
-          )}
+          <Button onClick={handleLogout} color="inherit">
+            LOGOUT
+          </Button>
         </Box>
       </Container>
     </Box>

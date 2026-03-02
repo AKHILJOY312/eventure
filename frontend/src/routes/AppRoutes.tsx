@@ -13,12 +13,11 @@ import AuthLayout from "@/components/templates/AuthLayout";
 import LoginPage from "@/components/pages/Auth/LoginPage";
 import RegisterPage from "@/components/pages/Auth/RegisterPage";
 import VerifyOTPPage from "@/components/pages/Auth/VerifyOTPPage";
-
-import BoardPage from "@/components/pages/BoardPage";
-import StatsPage from "@/components/pages/StatsPage";
 import AdminPage from "@/components/pages/AdminPage";
 import NotFoundPage from "@/components/pages/NotFoundPage";
 import { PATHS } from "./routeConstant";
+import BookingsPage from "@/components/pages/BookingsPage";
+import DiscoverPage from "@/components/pages/DiscoverPage";
 
 export const AppRoutes = () => {
   return (
@@ -38,8 +37,8 @@ export const AppRoutes = () => {
         <Route element={<Layout />}>
           {/* USER ROUTES */}
           <Route element={<RoleProtectedRoute allowedRoles={["user"]} />}>
-            <Route path={PATHS.USER.DASHBOARD} element={<BoardPage />} />
-            <Route path={PATHS.USER.STATS} element={<StatsPage />} />
+            <Route path={PATHS.USER.DASHBOARD} element={<BookingsPage />} />
+            <Route path={PATHS.USER.DISCOVER} element={<DiscoverPage />} />
           </Route>
 
           {/* ADMIN ROUTES */}
