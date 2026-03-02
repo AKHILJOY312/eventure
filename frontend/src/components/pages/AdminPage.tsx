@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { Box, Grid, Typography, Button, CircularProgress } from "@mui/material";
+import { Add } from "@mui/icons-material";
+import { COLORS } from "@/styles/theme";
 import { useAdminServices } from "@/hooks/useAdminServices";
-import type { ServiceInput } from "@/types/admin.types";
+import ServiceList from "../organisms/admin/ServiceList";
+import { BookingsList } from "../organisms/admin/BookingsList";
+import CreateServiceModal from "../organisms/admin/CreateServiceModal";
 
 function AdminPage() {
   const {
@@ -13,135 +18,90 @@ function AdminPage() {
     fetchServiceBookings,
     fetchAdminServices,
   } = useAdminServices();
+
   const [page, setPage] = useState(1);
-  const [form, setForm] = useState<ServiceInput>({
-    title: "gvdsfgdf",
-    category: "Venue",
-    pricePerDay: 300,
-    location: "dfdf dgfgdfg",
-  });
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
-    fetchAdminServices(page, 5);
+    fetchAdminServices(page, 6);
   }, [page]);
 
-  const handleCreate = async () => {
-    try {
-      await addService(form);
-      alert("Service created");
-    } catch {
-      // error already handled in hook
-    }
-  };
-  // const handleCreate = async () => {
-  //   try {
-  //     await addService(form);
-  //     await fetchAdminServices(page, 5);
-  //     alert("Service created");
-  //   } catch {}
-  // };
-  const handleFetchBookings = async () => {
-    // replace with real serviceId
-    await fetchServiceBookings("SERVICE_ID_HERE");
-  };
-
   return (
-    <div style={{ padding: 24 }}>
-      <h1>Admin Control Panel</h1>
+    <Box sx={{ p: 4 }}>
+      {/* Header */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 4,
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: 800, color: COLORS.primaryUI }}
+        >
+          Service Management
+        </Typography>
 
-      {loading && <p>Loading...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={() => setOpenModal(true)}
+          sx={{
+            bgcolor: COLORS.accent,
+            "&:hover": {
+              bgcolor: COLORS.accent,
+              opacity: 0.9,
+            },
+          }}
+        >
+          Create Service
+        </Button>
+      </Box>
 
-      <h2>Create Service</h2>
+      {loading && (
+        <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+          <CircularProgress />
+        </Box>
+      )}
 
-      <input
-        placeholder="Title"
-        value={form.title}
-        onChange={(e) =>
-          setForm((prev) => ({ ...prev, title: e.target.value }))
-        }
+      {error && (
+        <Typography color="error" sx={{ mb: 2 }}>
+          {error}
+        </Typography>
+      )}
+
+      <Grid container spacing={4}>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <ServiceList
+            services={services}
+            page={page}
+            onPrev={() => setPage((p) => p - 1)}
+            onNext={() => setPage((p) => p + 1)}
+            onDelete={async (id) => {
+              await removeService(id);
+              await fetchAdminServices(page, 6);
+            }}
+            onViewBookings={fetchServiceBookings}
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 4 }}>
+          <BookingsList bookings={bookings} />
+        </Grid>
+      </Grid>
+
+      <CreateServiceModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        onCreate={async (data) => {
+          await addService(data);
+          await fetchAdminServices(page, 6);
+          setOpenModal(false);
+        }}
       />
-
-      <input
-        placeholder="Category"
-        value={form.category}
-        onChange={(e) =>
-          setForm((prev) => ({ ...prev, category: e.target.value }))
-        }
-      />
-
-      <input
-        type="number"
-        placeholder="Price Per Day"
-        value={form.pricePerDay}
-        onChange={(e) =>
-          setForm((prev) => ({
-            ...prev,
-            pricePerDay: Number(e.target.value),
-          }))
-        }
-      />
-
-      <input
-        placeholder="Location"
-        value={form.location}
-        onChange={(e) =>
-          setForm((prev) => ({ ...prev, location: e.target.value }))
-        }
-      />
-
-      <button onClick={handleCreate}>Create Service</button>
-
-      <hr />
-      <hr />
-
-      <h2>My Services</h2>
-
-      <ul>
-        {services.map((s) => (
-          <li key={s.id} style={{ marginBottom: 10 }}>
-            <strong>{s.title}</strong> | ₹{s.pricePerDay} | {s.location}
-            <button
-              style={{ marginLeft: 10 }}
-              onClick={() => fetchServiceBookings(s.id)}
-            >
-              View Bookings
-            </button>
-            <button
-              style={{ marginLeft: 10, color: "red" }}
-              onClick={async () => {
-                await removeService(s.id);
-                await fetchAdminServices(page, 5);
-              }}
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
-
-      <div style={{ marginTop: 10 }}>
-        <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-          Prev
-        </button>
-
-        <span style={{ margin: "0 10px" }}>Page {page}</span>
-
-        <button onClick={() => setPage((p) => p + 1)}>Next</button>
-      </div>
-      <h2>Service Bookings</h2>
-
-      <button onClick={handleFetchBookings}>Fetch Bookings (Demo)</button>
-
-      <ul>
-        {bookings.map((b) => (
-          <li key={b.id}>
-            {b.userId} | {b.startDate} → {b.endDate} | ₹{b.totalPrice} |{" "}
-            {b.status}
-          </li>
-        ))}
-      </ul>
-    </div>
+    </Box>
   );
 }
 
