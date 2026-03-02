@@ -40,3 +40,10 @@ export const getBookingsSchema = z.object({
     .optional(),
   status: z.enum(BookingStatus).optional(),
 });
+
+export const listAdminServicesSchema = z.object({
+  page: z.preprocess((val) => Number(val), z.number().min(1)).optional(),
+  limit: z
+    .preprocess((val) => Number(val), z.number().min(1).max(50))
+    .optional(),
+});

@@ -19,7 +19,10 @@ export function getAdminRoutes(container: Container): Router {
   router.use(protect);
   router.use(requireRole(UserRole.ADMIN));
 
-  router.route("/services").post(asyncHandler(adminController.createService));
+  router
+    .route("/services")
+    .post(asyncHandler(adminController.createService))
+    .get(asyncHandler(adminController.listAdminServices));
 
   router
     .route("/services/:serviceId")

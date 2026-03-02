@@ -7,12 +7,14 @@ import {
   createServiceSchema,
   updateServiceSchema,
   getBookingsSchema,
+  listAdminServicesSchema,
 } from "@/interface-adapters/http/validators/adminValidators";
 import {
   ICreateService,
   IUpdateService,
   IDeleteService,
   IGetServiceBookings,
+  IListAllServices,
 } from "@/application/ports/use-cases/admin/IAdminUseCase";
 
 @injectable()
@@ -23,6 +25,8 @@ export class AdminController {
     @inject(TYPES.DeleteService) private deleteServiceUC: IDeleteService,
     @inject(TYPES.GetServiceBookings)
     private getBookingsUC: IGetServiceBookings,
+    @inject(TYPES.ListServices)
+    private listAdminServicesUC: IListAllServices,
   ) {}
 
   createService = async (req: Request, res: Response) => {
@@ -89,6 +93,24 @@ export class AdminController {
       ...validatedData.data,
       serviceId,
       adminId,
+    });
+
+    res.status(HTTP_STATUS.OK).json(result);
+  };
+
+  listAdminServices = async (req: Request, res: Response) => {
+    const validatedData = listAdminServicesSchema.safeParse(req.query);
+
+    if (!validatedData.success) {
+      throw new ValidationError(validatedData.error.issues[0].message);
+    }
+
+    // @ts-expect-error – adminId set by auth middleware
+    const adminId = req.user.id;
+
+    const result = await this.listAdminServicesUC.execute({
+      adminId,
+      ...validatedData.data,
     });
 
     res.status(HTTP_STATUS.OK).json(result);

@@ -52,3 +52,10 @@ export const getServiceBookings = (
 ) => {
   return api.get(`/admin/services/${serviceId}/bookings`, { params });
 };
+
+export const getAdminServices = (params?: {
+  page?: number;
+  limit?: number;
+}) => {
+  return api.get("/admin/services", { params });
+};

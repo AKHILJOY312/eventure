@@ -30,6 +30,7 @@ const TYPES = {
   DeleteService: Symbol.for("DeleteService"),
   GetServiceBookings: Symbol.for("GetServiceBookings"),
   UpdateService: Symbol.for("UpdateService"),
+  ListServices: Symbol.for("ListServices"),
 
   //Booking
   CalculateBookingPrice: Symbol.for("CalculateBookingPrice"),

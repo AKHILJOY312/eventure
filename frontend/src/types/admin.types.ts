@@ -1,8 +1,10 @@
-export type AdminBookingStatus =
-  | "PENDING"
-  | "CONFIRMED"
-  | "CANCELLED"
-  | "COMPLETED";
+export type AdminBookingStatus = "pending" | "confirmed" | "cancelled";
+export type ServiceCategory =
+  | "Venue"
+  | "Hotel"
+  | "Caterer"
+  | "Cameraman"
+  | "DJ";
 
 export interface AdminService {
   id: string;
@@ -18,7 +20,7 @@ export interface AdminService {
   updatedAt: string;
 }
 
-export interface CreateServiceInput {
+export interface ServiceInput {
   title: string;
   category: string;
   pricePerDay: number;
@@ -28,8 +30,6 @@ export interface CreateServiceInput {
   imageUrl?: string;
   availableDates?: string[];
 }
-
-export interface UpdateServiceInput extends Partial<CreateServiceInput> {}
 
 export interface AdminServiceBooking {
   id: string;

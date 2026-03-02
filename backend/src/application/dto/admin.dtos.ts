@@ -54,6 +54,7 @@ export interface DeleteServiceDto {
 // ===================== PAGINATION =====================
 
 export interface PaginationDto {
+  adminId: string;
   page?: number;
   limit?: number;
 }
@@ -78,6 +79,16 @@ export interface ServiceBookingResponseDTO {
 
 export interface PaginatedServiceBookingsDTO {
   data: ServiceBookingResponseDTO[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+// ===================== PAGINATED SERVICES =====================
+
+export interface PaginatedServicesDTO {
+  data: ServiceResponseDTO[];
   total: number;
   page: number;
   limit: number;

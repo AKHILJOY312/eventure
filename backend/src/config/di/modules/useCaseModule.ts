@@ -16,6 +16,7 @@ import {
   ICreateService,
   IDeleteService,
   IGetServiceBookings,
+  IListAllServices,
   IUpdateService,
 } from "@/application/ports/use-cases/admin/IAdminUseCase";
 import { CreateService } from "@/application/use-cases/admin/CreateService";
@@ -38,6 +39,7 @@ import {
 import { FilterServicesByAvailability } from "@/application/use-cases/discovery/FilterServicesByAvailability";
 import { GetServiceDetails } from "@/application/use-cases/discovery/GetServiceDetails";
 import { SearchServices } from "@/application/use-cases/discovery/SearchServices";
+import { ListServices } from "@/application/use-cases/admin/LIstAllService";
 
 export const useCaseModule = new ContainerModule((options) => {
   // Regular Auth Use Cases
@@ -54,6 +56,7 @@ export const useCaseModule = new ContainerModule((options) => {
     .bind<IGetServiceBookings>(TYPES.GetServiceBookings)
     .to(GetServiceBookings);
   options.bind<IUpdateService>(TYPES.UpdateService).to(UpdateService);
+  options.bind<IListAllServices>(TYPES.ListServices).to(ListServices);
 
   //Booking
   options

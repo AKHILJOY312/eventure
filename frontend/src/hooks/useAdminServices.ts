@@ -1,8 +1,7 @@
 import { useState } from "react";
 import type {
   // AdminService,
-  CreateServiceInput,
-  UpdateServiceInput,
+  ServiceInput,
   AdminServiceBooking,
 } from "@/types/admin.types";
 
@@ -11,6 +10,7 @@ import {
   updateService,
   deleteService,
   getServiceBookings,
+  getAdminServices,
 } from "@/services/admin.service";
 
 export function useAdminServices() {
@@ -18,8 +18,10 @@ export function useAdminServices() {
   const [bookings, setBookings] = useState<AdminServiceBooking[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const addService = async (data: CreateServiceInput) => {
+  const [services, setServices] = useState<any[]>([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [total, setTotal] = useState(0);
+  const addService = async (data: ServiceInput) => {
     try {
       setLoading(true);
       const res = await createService(data);
@@ -34,7 +36,7 @@ export function useAdminServices() {
     }
   };
 
-  const editService = async (serviceId: string, data: UpdateServiceInput) => {
+  const editService = async (serviceId: string, data: ServiceInput) => {
     try {
       setLoading(true);
       const res = await updateService(serviceId, data);
@@ -77,14 +79,37 @@ export function useAdminServices() {
     }
   };
 
+  const fetchAdminServices = async (page = 1, limit = 10) => {
+    try {
+      setLoading(true);
+      const res = await getAdminServices({ page, limit });
+
+      setServices(res.data.data);
+      setTotal(res.data.total);
+      setTotalPages(res.data.totalPages);
+
+      return res.data;
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to fetch services";
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
   return {
     // services,
     bookings,
     loading,
     error,
+    services,
+    total,
+    totalPages,
     addService,
     editService,
     removeService,
     fetchServiceBookings,
+    fetchAdminServices,
   };
 }
