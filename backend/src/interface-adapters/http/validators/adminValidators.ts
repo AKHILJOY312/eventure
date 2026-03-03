@@ -18,7 +18,10 @@ export const createServiceSchema = z.object({
   description: z.string().optional(),
   location: z.string().min(2),
   contactDetails: z.string().optional(),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.preprocess(
+    (val) => (val === "" ? undefined : val),
+    z.string().url().optional(),
+  ),
   availableDates: dateArraySchema,
 });
 
@@ -29,7 +32,10 @@ export const updateServiceSchema = z.object({
   description: z.string().optional(),
   location: z.string().min(2).optional(),
   contactDetails: z.string().optional(),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.preprocess(
+    (val) => (val === "" ? undefined : val),
+    z.string().url().optional(),
+  ),
   availableDates: dateArraySchema,
 });
 

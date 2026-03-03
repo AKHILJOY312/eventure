@@ -22,7 +22,7 @@ export interface AdminService {
 
 export interface ServiceInput {
   title: string;
-  category: string;
+  category: ServiceCategory;
   pricePerDay: number;
   description?: string;
   location: string;

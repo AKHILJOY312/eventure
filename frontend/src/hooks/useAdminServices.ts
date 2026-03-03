@@ -3,6 +3,7 @@ import type {
   // AdminService,
   ServiceInput,
   AdminServiceBooking,
+  AdminService,
 } from "@/types/admin.types";
 
 import {
@@ -14,11 +15,10 @@ import {
 } from "@/services/admin.service";
 
 export function useAdminServices() {
-  // const [services, setServices] = useState<AdminService[]>([]);
+  const [services, setServices] = useState<AdminService[]>([]);
   const [bookings, setBookings] = useState<AdminServiceBooking[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [services, setServices] = useState<any[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [total, setTotal] = useState(0);
   const addService = async (data: ServiceInput) => {
