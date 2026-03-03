@@ -4,11 +4,14 @@ export interface Service {
   description: string;
   category: string;
   location: string;
-  price: number;
+  pricePerDay: number;
   rating?: number;
   images?: string[];
   createdAt: string;
   updatedAt: string;
+  availableDates: string[];
+  bookedDates: string[];
+  contactDetails: string;
 }
 
 export interface SearchServiceParams {

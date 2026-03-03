@@ -248,7 +248,7 @@ export function DiscoverPage() {
                   {s.category} • {s.location}
                 </Typography>
                 <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
-                  ₹{s.price}{" "}
+                  ₹{s.pricePerDay}{" "}
                   <Typography component="span" variant="caption">
                     / day
                   </Typography>
@@ -308,7 +308,7 @@ export function DiscoverPage() {
           <Box sx={{ bgcolor: "#f0f4f8", p: 2, borderRadius: 1 }}>
             <Typography variant="subtitle2">Total Price</Typography>
             <Typography variant="h5" color="primary">
-              ₹{selectedService?.price}
+              ₹{selectedService?.pricePerDay}
             </Typography>
           </Box>
         </DialogContent>
