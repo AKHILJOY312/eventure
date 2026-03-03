@@ -9,7 +9,7 @@ const paginationSchema = z.object({
 
 // search
 export const searchServicesSchema = paginationSchema.extend({
-  keyword: z.string().min(1).optional(),
+  keyword: z.string().optional(),
   category: z.enum(ServiceCategory).optional(),
   location: z.string().min(1).optional(),
   minPrice: z.coerce.number().nonnegative().optional(),

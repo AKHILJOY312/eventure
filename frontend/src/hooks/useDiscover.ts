@@ -62,6 +62,7 @@ export function useDiscover() {
   return {
     services,
     selectedService,
+    setSelectedService,
     loading,
     error,
     search,
