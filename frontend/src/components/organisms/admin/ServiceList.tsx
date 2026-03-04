@@ -1,7 +1,7 @@
 import { Box, Typography, Paper, Button, Stack } from "@mui/material";
 import { Delete, Event } from "@mui/icons-material";
 import { COLORS } from "@/styles/theme";
-import type { AdminService } from "@/types/admin.types";
+import type { AdminService } from "@/types/service.types";
 
 type Props = {
   services: AdminService[];

@@ -4,7 +4,7 @@ import type {
   ServiceInput,
   AdminServiceBooking,
   AdminService,
-} from "@/types/admin.types";
+} from "@/types/service.types";
 
 import {
   createService,

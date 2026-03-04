@@ -38,7 +38,6 @@ export class BookingController {
     if (!validated.success) {
       throw new ValidationError(validated.error.issues[0].message);
     }
-
     // @ts-expect-error – added by auth middleware (protect)
     const userId = req.user.id;
 

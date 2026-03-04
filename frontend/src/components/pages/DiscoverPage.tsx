@@ -13,6 +13,7 @@ import { useDiscover } from "@/hooks/useDiscover";
 import { DiscoverFilters } from "@/components/organisms/discover/DiscoverFilters";
 import { BookingModal } from "@/components/organisms/discover/BookingModal";
 import { ServiceCard } from "@/components/organisms/discover/ServiceCard"; // Import here
+import type { SearchServiceParams } from "@/types/discover.types";
 
 function DiscoverPage() {
   const {
@@ -35,7 +36,7 @@ function DiscoverPage() {
   });
 
   const fetchServices = async () => {
-    const searchParams: any = { page, limit: 10 };
+    const searchParams: SearchServiceParams = { page, limit: 10 };
     if (filters.keyword) searchParams.keyword = filters.keyword;
     if (filters.location) searchParams.location = filters.location;
     if (filters.date) searchParams.date = filters.date;
@@ -49,13 +50,15 @@ function DiscoverPage() {
   }, [page]);
 
   const handleBook = async () => {
+    const startIso = dayjs(bookingDate).startOf("day").toISOString();
+    const endIso = dayjs(bookingDate).endOf("day").toISOString();
     if (!selectedService) return;
     try {
       setBookingLoading(true);
       await createBooking({
         serviceId: selectedService.id,
-        startDate: bookingDate,
-        endDate: bookingDate,
+        startDate: startIso,
+        endDate: endIso,
       });
       alert("Booking successful!");
       setSelectedService(null);

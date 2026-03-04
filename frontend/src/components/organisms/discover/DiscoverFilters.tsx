@@ -1,6 +1,6 @@
 import { Paper, Grid, TextField, MenuItem, Button } from "@mui/material";
 import { COLORS } from "@/styles/theme";
-import type { ServiceCategory } from "@/types/admin.types";
+import type { ServiceCategory } from "@/types/service.types";
 
 const CATEGORIES: ServiceCategory[] = [
   "Venue",

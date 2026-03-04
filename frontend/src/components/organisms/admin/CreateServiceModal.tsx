@@ -9,7 +9,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useState } from "react";
-import type { ServiceInput, ServiceCategory } from "@/types/admin.types";
+import type { ServiceInput, ServiceCategory } from "@/types/service.types";
 import { COLORS } from "@/styles/theme";
 import { DateManager } from "../../molecules/DateManager";
 
