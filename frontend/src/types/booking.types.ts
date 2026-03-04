@@ -14,8 +14,7 @@ export interface Booking {
 
 export interface CreateBookingInput {
   serviceId: string;
-  startDate: string;
-  endDate: string;
+  dates: string[];
 }
 
 export interface BookingQueryParams {

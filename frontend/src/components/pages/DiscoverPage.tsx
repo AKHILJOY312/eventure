@@ -7,13 +7,13 @@ import {
   Divider,
 } from "@mui/material";
 import { COLORS } from "@/styles/theme";
-import { createBooking } from "@/services/booking.service";
 import dayjs from "dayjs";
 import { useDiscover } from "@/hooks/useDiscover";
 import { DiscoverFilters } from "@/components/organisms/discover/DiscoverFilters";
 import { BookingModal } from "@/components/organisms/discover/BookingModal";
 import { ServiceCard } from "@/components/organisms/discover/ServiceCard"; // Import here
 import type { SearchServiceParams } from "@/types/discover.types";
+import { useBookings } from "@/hooks/useBookings";
 
 function DiscoverPage() {
   const {
@@ -27,13 +27,13 @@ function DiscoverPage() {
 
   const [page, setPage] = useState(1);
   const [bookingDate, setBookingDate] = useState(dayjs().format("YYYY-MM-DD"));
-  const [bookingLoading, setBookingLoading] = useState(false);
   const [filters, setFilters] = useState({
     keyword: "",
     category: "",
     location: "",
     date: "",
   });
+  const { addBooking, creating } = useBookings();
 
   const fetchServices = async () => {
     const searchParams: SearchServiceParams = { page, limit: 10 };
@@ -50,22 +50,22 @@ function DiscoverPage() {
   }, [page]);
 
   const handleBook = async () => {
-    const startIso = dayjs(bookingDate).startOf("day").toISOString();
-    const endIso = dayjs(bookingDate).endOf("day").toISOString();
     if (!selectedService) return;
+
+    const formattedDate = dayjs(bookingDate).format("YYYY-MM-DD");
+
     try {
-      setBookingLoading(true);
-      await createBooking({
+      await addBooking({
         serviceId: selectedService.id,
-        startDate: startIso,
-        endDate: endIso,
+        dates: [formattedDate],
       });
+
       alert("Booking successful!");
       setSelectedService(null);
-    } catch (err: any) {
-      alert(err.message || "Booking failed");
-    } finally {
-      setBookingLoading(false);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to fetch bookings";
+      alert(message);
     }
   };
 
@@ -110,7 +110,7 @@ function DiscoverPage() {
         setBookingDate={setBookingDate}
         onClose={() => setSelectedService(null)}
         onConfirm={handleBook}
-        loading={bookingLoading}
+        loading={creating}
       />
     </Box>
   );

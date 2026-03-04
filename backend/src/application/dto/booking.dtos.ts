@@ -27,16 +27,14 @@ export interface CalculateBookingPriceResponseDTO {
 export interface CreateBookingDto {
   userId: string;
   serviceId: string;
-  startDate: Date;
-  endDate: Date;
+  dates: string[];
 }
 
 export interface BookingResponseDTO {
   id: string;
   userId: string;
   serviceId: string;
-  startDate: Date;
-  endDate: Date;
+  dates: string[];
   totalPrice: number;
   status: BookingStatus;
   createdAt?: Date;

@@ -27,10 +27,10 @@ export class BookingRepository implements IBookingRepository {
     return {
       userId: new Types.ObjectId(booking.userId),
       serviceId: new Types.ObjectId(booking.serviceId),
-      startDate: booking.startDate,
-      endDate: booking.endDate,
+      dates: booking.dates, // ← changed: array of Dates
       totalPrice: booking.totalPrice,
       status: booking.status,
+      // isDeleted: false   ← usually managed separately
     };
   }
 
@@ -111,7 +111,7 @@ export class BookingRepository implements IBookingRepository {
     const docs = await BookingModel.find({
       serviceId: new Types.ObjectId(serviceId),
       isDeleted: { $ne: true },
-    }).sort({ startDate: 1 });
+    }).sort({ createdAt: -1 }); // ← changed default sort (dates array can't be sorted directly)
 
     return docs.map((doc) => this.toDomain(doc));
   }
@@ -145,6 +145,8 @@ export class BookingRepository implements IBookingRepository {
 
     const sortDirection = sortOrder === "asc" ? 1 : -1;
 
+    // Note: sorting by 'dates' array field is possible but rarely useful
+    // Most common: sort by createdAt, updatedAt, totalPrice
     const [docs, total] = await Promise.all([
       BookingModel.find(filter)
         .sort({ [sortBy]: sortDirection })
@@ -160,22 +162,24 @@ export class BookingRepository implements IBookingRepository {
   }
 
   // ---------------------------
-  // Find Overlapping Bookings
+  // Find Overlapping Bookings   ← updated for dates array
   // ---------------------------
 
   async findOverlappingBookings(params: {
     serviceId: string;
-    startDate: Date;
-    endDate: Date;
+    dates: Date[]; // ← changed signature to match domain
   }): Promise<Booking[]> {
-    const { serviceId, startDate, endDate } = params;
+    const { serviceId, dates } = params;
+
+    if (dates.length === 0) {
+      return [];
+    }
 
     const filter: FilterQuery<BookingDoc> = {
       serviceId: new Types.ObjectId(serviceId),
       isDeleted: { $ne: true },
-      status: { $ne: "cancelled" }, // cancelled bookings do not block availability
-      startDate: { $lte: endDate },
-      endDate: { $gte: startDate },
+      status: { $in: [BookingStatus.Pending, BookingStatus.Confirmed] },
+      dates: { $in: dates }, // ← any shared date = overlap
     };
 
     const docs = await BookingModel.find(filter);
@@ -224,5 +228,20 @@ export class BookingRepository implements IBookingRepository {
       bookings: docs.map((doc) => this.toDomain(doc)),
       total,
     };
+  }
+
+  // Optional: helper to check availability (convenience method)
+  async isDateRangeAvailable(
+    serviceId: string,
+    proposedDates: Date[],
+  ): Promise<boolean> {
+    if (proposedDates.length === 0) return true;
+
+    const overlapping = await this.findOverlappingBookings({
+      serviceId,
+      dates: proposedDates,
+    });
+
+    return overlapping.length === 0;
   }
 }

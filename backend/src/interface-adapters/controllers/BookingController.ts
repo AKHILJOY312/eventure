@@ -44,8 +44,7 @@ export class BookingController {
     const dto = {
       userId,
       serviceId: validated.data.serviceId,
-      startDate: validated.data.startDate,
-      endDate: validated.data.endDate,
+      dates: validated.data.dates.map((d: Date) => d.toISOString()),
     };
 
     const booking = await this.createBookingUC.execute(dto);

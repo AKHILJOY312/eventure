@@ -7,8 +7,7 @@ import api from "./api";
 
 export const createBooking = (data: {
   serviceId: string;
-  startDate: string; // ISO string
-  endDate: string; // ISO string
+  dates: string[]; // ISO string
 }) => {
   return api.post("/bookings", data);
 };

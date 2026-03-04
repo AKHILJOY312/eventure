@@ -32,8 +32,7 @@ export interface IBookingRepository {
 
   findOverlappingBookings(params: {
     serviceId: string;
-    startDate: Date;
-    endDate: Date;
+    dates: Date[];
   }): Promise<Booking[]>;
 
   findByUserIdPaginated(params: {
