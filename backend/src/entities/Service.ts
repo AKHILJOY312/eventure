@@ -1,9 +1,3 @@
-// export type ServiceCategory =
-//   | "Venue"
-//   | "Hotel"
-//   | "Caterer"
-//   | "Cameraman"
-//   | "DJ";
 export enum ServiceCategory {
   Venue = "Venue",
   Hotel = "Hotel",
@@ -105,65 +99,6 @@ export class Service {
     this._props.availableDates = uniqueDates;
     this._props.updatedAt = new Date();
   }
-  // isAvailableOn(date: Date): boolean {
-  //   const checkDate = new Date(date).toDateString();
-
-  //   // If explicitly booked, not available
-  //   const isBooked = this._props.bookedDates?.some(
-  //     (d) => new Date(d).toDateString() === checkDate,
-  //   );
-  //   if (isBooked) return false;
-
-  //   // If availableDates is set, must be in that list
-  //   if (this._props.availableDates?.length) {
-  //     return this._props.availableDates.some(
-  //       (d) => new Date(d).toDateString() === checkDate,
-  //     );
-  //   }
-
-  //   // If no restrictions, assume available
-  //   return true;
-  // }
-
-  // bookDate(date: Date): boolean {
-  //   if (!this.isAvailableOn(date)) return false;
-
-  //   const checkDate = new Date(date);
-  //   if (!this._props.bookedDates) this._props.bookedDates = [];
-
-  //   this._props.bookedDates.push(checkDate);
-  //   this._props.updatedAt = new Date();
-  //   return true;
-  // }
-
-  cancelBooking(date: Date): boolean {
-    const checkDate = new Date(date).toDateString();
-    const initialLength = this._props.bookedDates?.length || 0;
-
-    this._props.bookedDates =
-      this._props.bookedDates?.filter(
-        (d) => new Date(d).toDateString() !== checkDate,
-      ) || [];
-
-    const wasRemoved = this._props.bookedDates.length < initialLength;
-    if (wasRemoved) this._props.updatedAt = new Date();
-    return wasRemoved;
-  }
-
-  /**
-   * Add an available date (for services with limited availability)
-   */
-  addAvailableDate(date: Date): void {
-    if (!this._props.availableDates) this._props.availableDates = [];
-
-    const exists = this._props.availableDates.some(
-      (d) => new Date(d).getTime() === new Date(date).getTime(),
-    );
-    if (!exists) {
-      this._props.availableDates.push(new Date(date));
-      this._props.updatedAt = new Date();
-    }
-  }
 
   /**
    * Update service details (admin-only operation)
@@ -197,9 +132,5 @@ export class Service {
       title: updates.title?.trim(),
       updatedAt: new Date(),
     });
-  }
-
-  isOwnedBy(userId: string): boolean {
-    return this._props.adminId === userId;
   }
 }

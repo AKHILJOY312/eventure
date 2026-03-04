@@ -49,7 +49,7 @@ export function useDiscover() {
     try {
       setLoading(true);
       const res = await getServiceDetails(serviceId);
-      setSelectedService(res.data.data);
+      setSelectedService(res.data);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Failed to load service details";
