@@ -15,6 +15,7 @@ import { ServiceCard } from "@/components/organisms/discover/ServiceCard"; // Im
 import { Pagination } from "@/components/atoms/Pagination";
 import type { SearchServiceParams } from "@/types/discover.types";
 import { useBookings } from "@/hooks/useBookings";
+import UiAlert, { type UiAlertType } from "@/components/atoms/UiAlert";
 
 function DiscoverPage() {
   const {
@@ -35,6 +36,10 @@ function DiscoverPage() {
     location: "",
     date: "",
   });
+  const [uiAlert, setUiAlert] = useState<{
+    type: UiAlertType;
+    message: string;
+  } | null>(null);
   const { addBooking, creating } = useBookings();
 
   const fetchServices = async (nextPage = page) => {
@@ -62,17 +67,27 @@ function DiscoverPage() {
         dates: [formattedDate],
       });
 
-      alert("Booking successful!");
+      setUiAlert({ type: "success", message: "Booking successful!" });
       setSelectedService(null);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Failed to fetch bookings";
-      alert(message);
+      setUiAlert({ type: "error", message });
     }
   };
 
   return (
     <Box sx={{ p: 3 }}>
+      {uiAlert && (
+        <Box sx={{ mb: 2 }}>
+          <UiAlert
+            type={uiAlert.type}
+            message={uiAlert.message}
+            onClose={() => setUiAlert(null)}
+          />
+        </Box>
+      )}
+
       <Typography
         variant="h5"
         sx={{ fontWeight: 700, mb: 3, color: COLORS.primaryUI }}
