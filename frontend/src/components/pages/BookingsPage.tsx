@@ -80,16 +80,26 @@ function BookingsPage() {
             >
               <Box>
                 <Typography variant="subtitle1" fontWeight={600}>
-                  {b.status || "Service"}
+                  {b.service?.title ?? "Service"}
                 </Typography>
 
                 <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                  {b.startDate} → {b.endDate}
+                  {b.startDate} to {b.endDate}
                 </Typography>
 
                 <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                  ₹{b.totalPrice}
+                  {b.service?.category ?? "Category unavailable"} | {b.service?.location ?? "Location unavailable"}
                 </Typography>
+
+                <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                  Total: Rs.{b.totalPrice}
+                </Typography>
+
+                {b.service?.pricePerDay !== undefined && (
+                  <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                    Price per day: Rs.{b.service.pricePerDay}
+                  </Typography>
+                )}
               </Box>
 
               <Chip

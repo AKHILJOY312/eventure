@@ -34,9 +34,19 @@ export interface BookingResponseDTO {
   id: string;
   userId: string;
   serviceId: string;
-  dates: string[];
+  dates?: string[];
+  startDate?: string;
+  endDate?: string;
   totalPrice: number;
   status: BookingStatus;
+  service?: {
+    id: string;
+    title: string;
+    category: string;
+    location: string;
+    pricePerDay: number;
+    imageUrl?: string;
+  };
   createdAt?: Date;
   updatedAt?: Date;
 }
