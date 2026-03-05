@@ -7,11 +7,14 @@ import {
   Button,
   Stack,
   MenuItem,
+  FormHelperText,
 } from "@mui/material";
-import { useState } from "react";
+import { useFormik } from "formik";
 import type { ServiceInput, ServiceCategory } from "@/types/service.types";
 import { COLORS } from "@/styles/theme";
 import { DateManager } from "../../molecules/DateManager";
+import { createZodFormikValidator } from "@/utils/zodFormik";
+import { createServiceFormSchema } from "@/utils/zodSchemas";
 
 type Props = {
   open: boolean;
@@ -39,94 +42,144 @@ const INITIAL_STATE: ServiceInput = {
 };
 
 function CreateServiceModal({ open, onClose, onCreate }: Props) {
-  const [form, setForm] = useState<ServiceInput>(INITIAL_STATE);
+  const formik = useFormik<ServiceInput>({
+    initialValues: INITIAL_STATE,
+    validate: createZodFormikValidator(createServiceFormSchema),
+    validateOnBlur: true,
+    validateOnChange: true,
+    onSubmit: async (values, helpers) => {
+      try {
+        await onCreate({
+          ...values,
+          title: values.title.trim(),
+          location: values.location.trim(),
+          description: values.description?.trim() || "",
+          contactDetails: values.contactDetails?.trim() || "",
+          imageUrl: values.imageUrl?.trim() || "",
+        });
+        helpers.resetForm();
+      } catch (error) {
+        console.error("Form submission failed", error);
+      }
+    },
+  });
 
-  const handleSubmit = async () => {
-    try {
-      await onCreate(form);
-      setForm(INITIAL_STATE);
-    } catch (error) {
-      console.error("Form submission failed", error);
-    }
-  };
+  const hasFieldError = (field: keyof ServiceInput) =>
+    Boolean(formik.touched[field] && formik.errors[field]);
 
-  const updateField = (field: keyof ServiceInput, value: any) => {
-    setForm((p) => ({ ...p, [field]: value }));
+  const fieldError = (field: keyof ServiceInput) =>
+    formik.touched[field] && formik.errors[field]
+      ? String(formik.errors[field])
+      : "";
+
+  const handleCancel = () => {
+    formik.resetForm();
+    onClose();
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle sx={{ fontWeight: 700 }}>Create New Service</DialogTitle>
+    <Dialog open={open} onClose={handleCancel} fullWidth maxWidth="sm">
+      <form onSubmit={formik.handleSubmit}>
+        <DialogTitle sx={{ fontWeight: 700 }}>Create New Service</DialogTitle>
 
-      <DialogContent>
-        <Stack spacing={2} mt={1}>
-          <TextField
-            label="Service Title"
-            value={form.title}
-            onChange={(e) => updateField("title", e.target.value)}
-            fullWidth
-            required
-          />
+        <DialogContent>
+          <Stack spacing={2} mt={1}>
+            <TextField
+              label="Service Title"
+              name="title"
+              value={formik.values.title}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={hasFieldError("title")}
+              helperText={fieldError("title") || " "}
+              fullWidth
+              required
+            />
 
-          <TextField
-            select
-            label="Category"
-            value={form.category}
-            onChange={(e) => updateField("category", e.target.value)}
-            fullWidth
+            <TextField
+              select
+              label="Category"
+              name="category"
+              value={formik.values.category}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={hasFieldError("category")}
+              helperText={fieldError("category") || " "}
+              fullWidth
+            >
+              {CATEGORIES.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
+              type="number"
+              label="Price Per Day (INR)"
+              name="pricePerDay"
+              value={formik.values.pricePerDay}
+              onBlur={formik.handleBlur}
+              onChange={(e) => {
+                const parsed = Number(e.target.value);
+                formik.setFieldValue("pricePerDay", Number.isNaN(parsed) ? 0 : parsed);
+              }}
+              error={hasFieldError("pricePerDay")}
+              helperText={fieldError("pricePerDay") || " "}
+              fullWidth
+              required
+            />
+
+            <DateManager
+              dates={formik.values.availableDates || []}
+              onUpdate={(newDates) => {
+                formik.setFieldTouched("availableDates", true, false);
+                formik.setFieldValue("availableDates", newDates);
+              }}
+            />
+            {fieldError("availableDates") && (
+              <FormHelperText error>{fieldError("availableDates")}</FormHelperText>
+            )}
+
+            <TextField
+              label="Location"
+              name="location"
+              value={formik.values.location}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={hasFieldError("location")}
+              helperText={fieldError("location") || " "}
+              fullWidth
+              required
+            />
+
+            <TextField
+              label="Description"
+              name="description"
+              multiline
+              rows={2}
+              value={formik.values.description}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={hasFieldError("description")}
+              helperText={fieldError("description") || " "}
+              fullWidth
+            />
+          </Stack>
+        </DialogContent>
+
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleCancel}>Cancel</Button>
+          <Button
+            variant="contained"
+            type="submit"
+            disabled={formik.isSubmitting}
+            sx={{ bgcolor: COLORS.accent, "&:hover": { bgcolor: "#e88840" } }}
           >
-            {CATEGORIES.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </TextField>
-
-          <TextField
-            type="number"
-            label="Price Per Day (₹)"
-            value={form.pricePerDay}
-            onChange={(e) => updateField("pricePerDay", Number(e.target.value))}
-            fullWidth
-            required
-          />
-
-          {/* Extracted Component */}
-          <DateManager
-            dates={form.availableDates || []}
-            onUpdate={(newDates) => updateField("availableDates", newDates)}
-          />
-
-          <TextField
-            label="Location"
-            value={form.location}
-            onChange={(e) => updateField("location", e.target.value)}
-            fullWidth
-            required
-          />
-
-          <TextField
-            label="Description"
-            multiline
-            rows={2}
-            value={form.description}
-            onChange={(e) => updateField("description", e.target.value)}
-            fullWidth
-          />
-        </Stack>
-      </DialogContent>
-
-      <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button
-          variant="contained"
-          onClick={handleSubmit}
-          disabled={!form.title || !form.location || form.pricePerDay <= 0}
-          sx={{ bgcolor: COLORS.accent, "&:hover": { bgcolor: "#e88840" } }}
-        >
-          Create Service
-        </Button>
-      </DialogActions>
+            Create Service
+          </Button>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 }

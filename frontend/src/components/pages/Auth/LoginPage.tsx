@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   Paper,
@@ -10,27 +10,39 @@ import {
   Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
 import { useAuth } from "@/hooks/useAuth";
 import { COLORS, MONO_FONT } from "@/styles/theme";
+import { createZodFormikValidator } from "@/utils/zodFormik";
+import { loginFormSchema } from "@/utils/zodSchemas";
 
-// Removed setView from props to use useNavigate (The Pro Way)
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login, loading, error } = useAuth();
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validate: createZodFormikValidator(loginFormSchema),
+    validateOnBlur: true,
+    validateOnChange: true,
+    onSubmit: async (values) => {
+      await login(values.email.trim(), values.password);
+    },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const fieldError = (field: "email" | "password") =>
+    formik.touched[field] && formik.errors[field] ? formik.errors[field] : "";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Dispatch the Redux login thunk
-    await login(formData.email, formData.password);
+  const hasFieldError = (field: "email" | "password") =>
+    Boolean(fieldError(field));
+
+  const inputStyles = {
+    bgcolor: "rgba(255,255,255,0.05)",
+    color: "white",
+    fontFamily: MONO_FONT,
   };
 
   return (
@@ -53,7 +65,7 @@ const LoginPage: React.FC = () => {
           color: "white",
           borderRadius: 4,
           border: `1px solid ${COLORS.accent}`,
-          boxShadow: `0 0 20px ${COLORS.accent}22`, // Subtle glow
+          boxShadow: `0 0 20px ${COLORS.accent}22`,
         }}
       >
         <Typography
@@ -98,7 +110,7 @@ const LoginPage: React.FC = () => {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={formik.handleSubmit}>
           <TextField
             fullWidth
             required
@@ -106,19 +118,24 @@ const LoginPage: React.FC = () => {
             label="USER_IDENTIFIER (EMAIL)"
             variant="filled"
             margin="normal"
-            value={formData.email}
-            onChange={handleChange}
-            InputProps={{
-              sx: {
-                bgcolor: "rgba(255,255,255,0.05)",
-                color: "white",
-                fontFamily: MONO_FONT,
-              },
-            }}
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={hasFieldError("email")}
+            helperText={fieldError("email") || " "}
+            InputProps={{ sx: inputStyles }}
             InputLabelProps={{
               sx: { color: "rgba(255,255,255,0.5)", fontFamily: MONO_FONT },
             }}
+            FormHelperTextProps={{
+              sx: {
+                color: "#ff9e9e",
+                fontFamily: MONO_FONT,
+                fontSize: "0.65rem",
+              },
+            }}
           />
+
           <TextField
             fullWidth
             required
@@ -127,17 +144,21 @@ const LoginPage: React.FC = () => {
             label="ACCESS_PHRASE"
             variant="filled"
             margin="normal"
-            value={formData.password}
-            onChange={handleChange}
-            InputProps={{
-              sx: {
-                bgcolor: "rgba(255,255,255,0.05)",
-                color: "white",
-                fontFamily: MONO_FONT,
-              },
-            }}
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={hasFieldError("password")}
+            helperText={fieldError("password") || " "}
+            InputProps={{ sx: inputStyles }}
             InputLabelProps={{
               sx: { color: "rgba(255,255,255,0.5)", fontFamily: MONO_FONT },
+            }}
+            FormHelperTextProps={{
+              sx: {
+                color: "#ff9e9e",
+                fontFamily: MONO_FONT,
+                fontSize: "0.65rem",
+              },
             }}
           />
 
@@ -147,7 +168,7 @@ const LoginPage: React.FC = () => {
             variant="contained"
             disabled={loading}
             sx={{
-              mt: 4,
+              mt: 2,
               py: 1.5,
               bgcolor: COLORS.accent,
               color: COLORS.primaryUI,
