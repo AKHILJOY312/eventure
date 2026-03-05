@@ -32,7 +32,8 @@ export interface ServiceInput {
 }
 
 export interface AdminServiceBooking {
-  id: string;
+  bookingId: string;
+  serviceId: string;
   userId: string;
   startDate: string;
   endDate: string;

@@ -1,25 +1,32 @@
-import { Box, Typography, Paper, Stack, Chip } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Paper,
+  Stack,
+  Chip,
+  FormControl,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import { COLORS } from "@/styles/theme";
-
-type BookingStatus = "pending" | "confirmed" | "cancelled";
-
-export interface AdminBooking {
-  id: string;
-  userId: string;
-  startDate: string;
-  endDate: string;
-  totalPrice: number;
-  status: BookingStatus;
-}
+import type {
+  AdminBookingStatus,
+  AdminServiceBooking,
+} from "@/types/service.types";
 
 type Props = {
-  bookings: AdminBooking[];
+  bookings: AdminServiceBooking[];
+  onMoveStatus: (
+    serviceId: string,
+    bookingId: string,
+    status: AdminBookingStatus,
+  ) => Promise<void>;
 };
 
-export function BookingsList({ bookings }: Props) {
+export function BookingsList({ bookings, onMoveStatus }: Props) {
   const isEmpty = bookings.length === 0;
 
-  const getStatusColor = (status: AdminBooking["status"]) => {
+  const getStatusColor = (status: AdminBookingStatus) => {
     switch (status) {
       case "confirmed":
         return "success";
@@ -64,7 +71,7 @@ export function BookingsList({ bookings }: Props) {
         <Stack spacing={2}>
           {bookings.map((b) => (
             <Paper
-              key={b.id}
+              key={b.bookingId}
               elevation={0}
               sx={{
                 p: 2,
@@ -85,19 +92,37 @@ export function BookingsList({ bookings }: Props) {
                 </Typography>
 
                 <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                  {b.startDate} → {b.endDate}
+                  {b.startDate} to {b.endDate}
                 </Typography>
 
                 <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                  ₹{b.totalPrice}
+                  Rs.{b.totalPrice}
                 </Typography>
               </Box>
 
-              <Chip
-                label={b.status.toUpperCase()}
-                color={getStatusColor(b.status)}
-                size="small"
-              />
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Chip
+                  label={b.status.toUpperCase()}
+                  color={getStatusColor(b.status)}
+                  size="small"
+                />
+                <FormControl size="small" sx={{ minWidth: 130 }}>
+                  <Select
+                    value={b.status}
+                    onChange={(e) =>
+                      onMoveStatus(
+                        b.serviceId,
+                        b.bookingId,
+                        e.target.value as AdminBookingStatus,
+                      )
+                    }
+                  >
+                    <MenuItem value="pending">Pending</MenuItem>
+                    <MenuItem value="confirmed">Confirmed</MenuItem>
+                    <MenuItem value="cancelled">Cancelled</MenuItem>
+                  </Select>
+                </FormControl>
+              </Stack>
             </Paper>
           ))}
         </Stack>

@@ -43,4 +43,10 @@ export interface IBookingRepository {
     sortBy?: BookingSortableFields;
     sortOrder?: SortOrder;
   }): Promise<PaginatedBookingResult>;
+
+  updateStatusForService(params: {
+    bookingId: string;
+    serviceId: string;
+    status: BookingStatus;
+  }): Promise<boolean>;
 }

@@ -45,6 +45,7 @@ export class GetServiceBookings implements IGetServiceBookings {
 
     const data = bookings.map((b) => ({
       bookingId: b.id!,
+      serviceId: b.serviceId,
       userId: b.userId,
       startDate: b.startDate,
       endDate: b.endDate,

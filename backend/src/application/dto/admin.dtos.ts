@@ -69,6 +69,7 @@ export interface GetServiceBookingsDto extends PaginationDto {
 
 export interface ServiceBookingResponseDTO {
   bookingId: string;
+  serviceId: string;
   userId: string;
   startDate: Date;
   endDate: Date;
@@ -83,6 +84,20 @@ export interface PaginatedServiceBookingsDTO {
   page: number;
   limit: number;
   totalPages: number;
+}
+
+export interface UpdateBookingStatusDto {
+  serviceId: string;
+  bookingId: string;
+  adminId: string;
+  status: BookingStatus;
+}
+
+export interface BookingStatusUpdateResponseDTO {
+  bookingId: string;
+  serviceId: string;
+  status: BookingStatus;
+  message: string;
 }
 
 // ===================== PAGINATED SERVICES =====================

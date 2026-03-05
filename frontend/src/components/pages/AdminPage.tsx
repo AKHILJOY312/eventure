@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Grid, Typography, Button, CircularProgress } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { COLORS } from "@/styles/theme";
@@ -17,6 +17,7 @@ function AdminPage() {
     removeService,
     fetchServiceBookings,
     fetchAdminServices,
+    moveBookingStatus,
   } = useAdminServices();
 
   const [page, setPage] = useState(1);
@@ -88,7 +89,7 @@ function AdminPage() {
         </Grid>
 
         <Grid size={{ xs: 12, md: 4 }}>
-          <BookingsList bookings={bookings} />
+          <BookingsList bookings={bookings} onMoveStatus={moveBookingStatus} />
         </Grid>
       </Grid>
 

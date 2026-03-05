@@ -32,5 +32,9 @@ export function getAdminRoutes(container: Container): Router {
   router
     .route("/services/:serviceId/bookings")
     .get(asyncHandler(adminController.getServiceBookings));
+
+  router
+    .route("/services/:serviceId/bookings/:bookingId/status")
+    .patch(asyncHandler(adminController.updateBookingStatus));
   return router;
 }

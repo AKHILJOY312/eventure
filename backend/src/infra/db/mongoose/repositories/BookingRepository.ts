@@ -230,6 +230,28 @@ export class BookingRepository implements IBookingRepository {
     };
   }
 
+  async updateStatusForService(params: {
+    bookingId: string;
+    serviceId: string;
+    status: BookingStatus;
+  }): Promise<boolean> {
+    const result = await BookingModel.updateOne(
+      {
+        _id: new Types.ObjectId(params.bookingId),
+        serviceId: new Types.ObjectId(params.serviceId),
+        isDeleted: { $ne: true },
+      },
+      {
+        $set: {
+          status: params.status,
+          updatedAt: new Date(),
+        },
+      },
+    );
+
+    return result.matchedCount > 0;
+  }
+
   // Optional: helper to check availability (convenience method)
   async isDateRangeAvailable(
     serviceId: string,

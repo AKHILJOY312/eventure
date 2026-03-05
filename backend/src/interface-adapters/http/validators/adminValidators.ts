@@ -53,3 +53,12 @@ export const listAdminServicesSchema = z.object({
     .preprocess((val) => Number(val), z.number().min(1).max(50))
     .optional(),
 });
+
+export const updateBookingStatusSchema = z.object({
+  status: z.enum(BookingStatus),
+});
+
+export const updateBookingStatusParamsSchema = z.object({
+  serviceId: z.string().min(1, "serviceId is required"),
+  bookingId: z.string().min(1, "bookingId is required"),
+});

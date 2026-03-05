@@ -1,10 +1,12 @@
 import {
+  BookingStatusUpdateResponseDTO,
   CreateServiceDto,
   DeleteServiceDto,
   GetServiceBookingsDto,
   PaginatedServiceBookingsDTO,
   PaginatedServicesDTO,
   PaginationDto,
+  UpdateBookingStatusDto,
   UpdateServiceDto,
 } from "@/application/dto/admin.dtos";
 import { ServiceResponseDTO } from "@/application/dto/discover.dtos";
@@ -26,4 +28,8 @@ export interface IGetServiceBookings {
 }
 export interface IListAllServices {
   execute(dto: PaginationDto): Promise<PaginatedServicesDTO>;
+}
+
+export interface IUpdateBookingStatus {
+  execute(dto: UpdateBookingStatusDto): Promise<BookingStatusUpdateResponseDTO>;
 }

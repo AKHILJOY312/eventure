@@ -8,6 +8,8 @@ import {
   updateServiceSchema,
   getBookingsSchema,
   listAdminServicesSchema,
+  updateBookingStatusSchema,
+  updateBookingStatusParamsSchema,
 } from "@/interface-adapters/http/validators/adminValidators";
 import {
   ICreateService,
@@ -15,6 +17,7 @@ import {
   IDeleteService,
   IGetServiceBookings,
   IListAllServices,
+  IUpdateBookingStatus,
 } from "@/application/ports/use-cases/admin/IAdminUseCase";
 
 @injectable()
@@ -27,6 +30,8 @@ export class AdminController {
     private getBookingsUC: IGetServiceBookings,
     @inject(TYPES.ListServices)
     private listAdminServicesUC: IListAllServices,
+    @inject(TYPES.UpdateBookingStatus)
+    private updateBookingStatusUC: IUpdateBookingStatus,
   ) {}
 
   createService = async (req: Request, res: Response) => {
@@ -111,6 +116,32 @@ export class AdminController {
     const result = await this.listAdminServicesUC.execute({
       adminId,
       ...validatedData.data,
+    });
+
+    res.status(HTTP_STATUS.OK).json(result);
+  };
+
+  updateBookingStatus = async (req: Request, res: Response) => {
+    const validatedBody = updateBookingStatusSchema.safeParse(req.body);
+    if (!validatedBody.success) {
+      throw new ValidationError(validatedBody.error.issues[0].message);
+    }
+
+    const validatedParams = updateBookingStatusParamsSchema.safeParse(
+      req.params,
+    );
+    if (!validatedParams.success) {
+      throw new ValidationError(validatedParams.error.issues[0].message);
+    }
+
+    // @ts-expect-error - adminId set by auth middleware
+    const adminId = req.user.id;
+
+    const result = await this.updateBookingStatusUC.execute({
+      adminId,
+      serviceId: validatedParams.data.serviceId,
+      bookingId: validatedParams.data.bookingId,
+      status: validatedBody.data.status,
     });
 
     res.status(HTTP_STATUS.OK).json(result);

@@ -12,6 +12,7 @@ import {
   deleteService,
   getServiceBookings,
   getAdminServices,
+  updateBookingStatus,
 } from "@/services/admin.service";
 
 export function useAdminServices() {
@@ -98,6 +99,31 @@ export function useAdminServices() {
       setLoading(false);
     }
   };
+
+  const moveBookingStatus = async (
+    serviceId: string,
+    bookingId: string,
+    status: "pending" | "confirmed" | "cancelled",
+  ) => {
+    try {
+      setLoading(true);
+      await updateBookingStatus(serviceId, bookingId, status);
+
+      setBookings((prev) =>
+        prev.map((booking) =>
+          booking.bookingId === bookingId ? { ...booking, status } : booking,
+        ),
+      );
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to update booking status";
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     // services,
     bookings,
@@ -111,5 +137,6 @@ export function useAdminServices() {
     removeService,
     fetchServiceBookings,
     fetchAdminServices,
+    moveBookingStatus,
   };
 }

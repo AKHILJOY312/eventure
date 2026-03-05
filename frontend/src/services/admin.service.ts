@@ -53,6 +53,16 @@ export const getServiceBookings = (
   return api.get(`/admin/services/${serviceId}/bookings`, { params });
 };
 
+export const updateBookingStatus = (
+  serviceId: string,
+  bookingId: string,
+  status: "pending" | "confirmed" | "cancelled",
+) => {
+  return api.patch(`/admin/services/${serviceId}/bookings/${bookingId}/status`, {
+    status,
+  });
+};
+
 export const getAdminServices = (params?: {
   page?: number;
   limit?: number;
