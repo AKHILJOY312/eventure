@@ -65,6 +65,46 @@ export class NodemailerEmailService implements IEmailService {
     `;
   }
 
+  private getBookingConfirmationTemplate(params: {
+    name?: string;
+    bookingId: string;
+    serviceTitle: string;
+    location: string;
+    startDate: Date;
+    endDate: Date;
+    totalPrice: number;
+  }): string {
+    const dateFormatter = new Intl.DateTimeFormat("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+
+    const formattedStart = dateFormatter.format(params.startDate);
+    const formattedEnd = dateFormatter.format(params.endDate);
+
+    return `
+      <div style="font-family: Arial, sans-serif; max-width: 640px; margin: auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 12px; background: #ffffff;">
+        <h2 style="margin: 0 0 12px; color: #111827;">Booking Confirmed</h2>
+        <p style="margin: 0 0 16px; color: #4b5563;">
+          Hi ${params.name || "there"}, your booking has been confirmed by the admin.
+        </p>
+
+        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px;">
+          <p style="margin: 0 0 8px; color: #111827;"><strong>Booking ID:</strong> ${params.bookingId}</p>
+          <p style="margin: 0 0 8px; color: #111827;"><strong>Service:</strong> ${params.serviceTitle}</p>
+          <p style="margin: 0 0 8px; color: #111827;"><strong>Location:</strong> ${params.location}</p>
+          <p style="margin: 0 0 8px; color: #111827;"><strong>Dates:</strong> ${formattedStart} - ${formattedEnd}</p>
+          <p style="margin: 0; color: #111827;"><strong>Total Price:</strong> INR ${params.totalPrice.toLocaleString("en-IN")}</p>
+        </div>
+
+        <p style="margin: 16px 0 0; color: #6b7280; font-size: 12px;">
+          Please keep this email for your reference.
+        </p>
+      </div>
+    `;
+  }
+
   /**
    * Implementation of the IEmailService interface
    */
@@ -86,6 +126,36 @@ export class NodemailerEmailService implements IEmailService {
         message: err.message,
       });
       throw new Error("EMAIL_DELIVERY_FAILED");
+    }
+  }
+
+  async sendBookingConfirmation(params: {
+    email: string;
+    name?: string;
+    bookingId: string;
+    serviceTitle: string;
+    location: string;
+    startDate: Date;
+    endDate: Date;
+    totalPrice: number;
+  }): Promise<void> {
+    const mailOptions: SendMailOptions = {
+      from: `"Event Booking Team" <${this.fromEmail}>`,
+      to: params.email,
+      subject: `Booking Confirmed - ${params.serviceTitle}`,
+      html: this.getBookingConfirmationTemplate(params),
+    };
+
+    try {
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log("Booking confirmation email sent:", info.messageId, "to:", params.email);
+    } catch (error: unknown) {
+      const err = error as Error;
+      console.error("Failed to send booking confirmation email:", {
+        to: params.email,
+        message: err.message,
+      });
+      throw new Error("BOOKING_CONFIRMATION_EMAIL_FAILED");
     }
   }
 }
