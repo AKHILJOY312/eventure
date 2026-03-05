@@ -25,6 +25,17 @@ type Props = {
 
 export function BookingsList({ bookings, onMoveStatus }: Props) {
   const isEmpty = bookings.length === 0;
+  const dateFormatter = new Intl.DateTimeFormat("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+  const formatDate = (value: string) => {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return dateFormatter.format(date);
+  };
 
   const getStatusColor = (status: AdminBookingStatus) => {
     switch (status) {
@@ -88,11 +99,11 @@ export function BookingsList({ bookings, onMoveStatus }: Props) {
             >
               <Box>
                 <Typography variant="subtitle2" fontWeight={600}>
-                  User: {b.userId}
+                  User: {b.userName || b.userId}
                 </Typography>
 
                 <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                  {b.startDate} to {b.endDate}
+                  {formatDate(b.startDate)} to {formatDate(b.endDate)}
                 </Typography>
 
                 <Typography variant="body2" sx={{ opacity: 0.7 }}>

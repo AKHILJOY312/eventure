@@ -35,6 +35,7 @@ export interface AdminServiceBooking {
   bookingId: string;
   serviceId: string;
   userId: string;
+  userName: string;
   startDate: string;
   endDate: string;
   totalPrice: number;

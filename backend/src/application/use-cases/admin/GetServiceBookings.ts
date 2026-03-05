@@ -7,6 +7,7 @@ import {
 } from "@/application/dto/admin.dtos";
 import { IServiceRepository } from "@/application/ports/repositories/IServiceRepository";
 import { IBookingRepository } from "@/application/ports/repositories/IBookingRepository";
+import { IUserRepository } from "@/application/ports/repositories/IUserRepository";
 import { NotFoundError } from "@/application/error/AppError";
 import { IGetServiceBookings } from "@/application/ports/use-cases/admin/IAdminUseCase";
 
@@ -15,6 +16,7 @@ export class GetServiceBookings implements IGetServiceBookings {
   constructor(
     @inject(TYPES.ServiceRepository) private _serviceRepo: IServiceRepository,
     @inject(TYPES.BookingRepository) private _bookingRepo: IBookingRepository,
+    @inject(TYPES.UserRepository) private _userRepo: IUserRepository,
   ) {}
 
   async execute(
@@ -43,10 +45,15 @@ export class GetServiceBookings implements IGetServiceBookings {
         sortOrder: "desc",
       });
 
-    const data = bookings.map((b) => ({
+    const users = await Promise.all(
+      bookings.map((booking) => this._userRepo.findById(booking.userId)),
+    );
+
+    const data = bookings.map((b, index) => ({
       bookingId: b.id!,
       serviceId: b.serviceId,
       userId: b.userId,
+      userName: users[index]?.name ?? b.userId,
       startDate: b.startDate,
       endDate: b.endDate,
       totalPrice: b.totalPrice,

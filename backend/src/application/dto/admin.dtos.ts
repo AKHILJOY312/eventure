@@ -71,6 +71,7 @@ export interface ServiceBookingResponseDTO {
   bookingId: string;
   serviceId: string;
   userId: string;
+  userName: string;
   startDate: Date;
   endDate: Date;
   totalPrice: number;
