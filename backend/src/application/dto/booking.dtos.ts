@@ -1,5 +1,7 @@
 // ===================== COMMON =====================
 
+import { BookingStatus } from "@/entities/Booking";
+
 export interface PaginationDto {
   page?: number; // default 1
   limit?: number; // default 10
@@ -25,18 +27,26 @@ export interface CalculateBookingPriceResponseDTO {
 export interface CreateBookingDto {
   userId: string;
   serviceId: string;
-  startDate: Date;
-  endDate: Date;
+  dates: string[];
 }
 
 export interface BookingResponseDTO {
   id: string;
   userId: string;
   serviceId: string;
-  startDate: Date;
-  endDate: Date;
+  dates?: string[];
+  startDate?: string;
+  endDate?: string;
   totalPrice: number;
-  status: "pending" | "confirmed" | "cancelled";
+  status: BookingStatus;
+  service?: {
+    id: string;
+    title: string;
+    category: string;
+    location: string;
+    pricePerDay: number;
+    imageUrl?: string;
+  };
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -45,7 +55,7 @@ export interface BookingResponseDTO {
 
 export interface GetUserBookingHistoryDto extends PaginationDto {
   userId: string;
-  status?: "pending" | "confirmed" | "cancelled";
+  status?: BookingStatus;
 }
 
 export interface PaginatedBookingsDTO {

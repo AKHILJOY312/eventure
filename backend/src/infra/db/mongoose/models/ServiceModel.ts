@@ -1,13 +1,6 @@
 // src/infrastructure/models/ServiceModel.ts
 import mongoose, { Document, Schema, Types } from "mongoose";
-import { Service, ServiceProps } from "@/entities/Service";
-
-export type ServiceCategory =
-  | "Venue"
-  | "Hotel"
-  | "Caterer"
-  | "Cameraman"
-  | "DJ";
+import { Service, ServiceCategory, ServiceProps } from "@/entities/Service";
 
 export interface ServiceDoc extends Document {
   _id: Types.ObjectId;
@@ -36,7 +29,7 @@ const serviceSchema = new Schema<ServiceDoc>(
 
     category: {
       type: String,
-      enum: ["Venue", "Hotel", "Caterer", "Cameraman", "DJ"],
+      enum: Object.values(ServiceCategory),
       required: true,
     },
 
@@ -98,7 +91,7 @@ export const toServiceEntity = (doc: ServiceDoc): Service => {
   const props: ServiceProps = {
     id: doc._id.toString(),
     title: doc.title,
-    category: doc.category,
+    category: doc.category as ServiceCategory,
     pricePerDay: doc.pricePerDay,
     description: doc.description,
     location: doc.location,

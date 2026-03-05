@@ -16,6 +16,8 @@ import {
   ICreateService,
   IDeleteService,
   IGetServiceBookings,
+  IListAllServices,
+  IUpdateBookingStatus,
   IUpdateService,
 } from "@/application/ports/use-cases/admin/IAdminUseCase";
 import { CreateService } from "@/application/use-cases/admin/CreateService";
@@ -30,6 +32,16 @@ import {
 import { CalculateBookingPrice } from "@/application/use-cases/booking/CalculateBookingPrice";
 import { CreateBooking } from "@/application/use-cases/booking/CreateBooking";
 import { GetUserBookingHistory } from "@/application/use-cases/booking/GetUserBookingHistory";
+import {
+  IFilterServicesByAvailability,
+  IGetServiceDetails,
+  ISearchServices,
+} from "@/application/ports/use-cases/discover/IDiscoverUseCase";
+import { FilterServicesByAvailability } from "@/application/use-cases/discovery/FilterServicesByAvailability";
+import { GetServiceDetails } from "@/application/use-cases/discovery/GetServiceDetails";
+import { SearchServices } from "@/application/use-cases/discovery/SearchServices";
+import { ListServices } from "@/application/use-cases/admin/LIstAllService";
+import { UpdateBookingStatus } from "@/application/use-cases/admin/UpdateBookingStatus";
 
 export const useCaseModule = new ContainerModule((options) => {
   // Regular Auth Use Cases
@@ -46,6 +58,10 @@ export const useCaseModule = new ContainerModule((options) => {
     .bind<IGetServiceBookings>(TYPES.GetServiceBookings)
     .to(GetServiceBookings);
   options.bind<IUpdateService>(TYPES.UpdateService).to(UpdateService);
+  options.bind<IListAllServices>(TYPES.ListServices).to(ListServices);
+  options
+    .bind<IUpdateBookingStatus>(TYPES.UpdateBookingStatus)
+    .to(UpdateBookingStatus);
 
   //Booking
   options
@@ -55,4 +71,13 @@ export const useCaseModule = new ContainerModule((options) => {
   options
     .bind<IGetUserBookingHistory>(TYPES.GetUserBookingHistory)
     .to(GetUserBookingHistory);
+
+  //Discovery
+  options
+    .bind<IFilterServicesByAvailability>(TYPES.FilterServicesByAvailability)
+    .to(FilterServicesByAvailability);
+  options
+    .bind<IGetServiceDetails>(TYPES.GetServiceDetails)
+    .to(GetServiceDetails);
+  options.bind<ISearchServices>(TYPES.SearchServices).to(SearchServices);
 });

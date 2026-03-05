@@ -13,7 +13,9 @@ const TYPES = {
 
   //controller
   AuthController: Symbol.for("AuthController"),
-  // TaskController: Symbol.for("TaskController"),
+  AdminController: Symbol.for("AdminController"),
+  BookingController: Symbol.for("BookingController"),
+  DiscoverController: Symbol.for("DiscoverController"),
 
   // Use Cases - Auth
   RegisterUser: Symbol.for("RegisterUser"),
@@ -28,6 +30,8 @@ const TYPES = {
   DeleteService: Symbol.for("DeleteService"),
   GetServiceBookings: Symbol.for("GetServiceBookings"),
   UpdateService: Symbol.for("UpdateService"),
+  ListServices: Symbol.for("ListServices"),
+  UpdateBookingStatus: Symbol.for("UpdateBookingStatus"),
 
   //Booking
   CalculateBookingPrice: Symbol.for("CalculateBookingPrice"),
@@ -35,6 +39,9 @@ const TYPES = {
   GetUserBookingHistory: Symbol.for("GetUserBookingHistory"),
 
   //Discovery
+  SearchServices: Symbol.for("SearchServices"),
+  FilterServicesByAvailability: Symbol.for("FilterServicesByAvailability"),
+  GetServiceDetails: Symbol.for("GetServiceDetails"),
 };
 
 export { TYPES };

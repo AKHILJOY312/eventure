@@ -1,6 +1,7 @@
 // ===================== CREATE =====================
 
 import { ServiceCategory } from "@/entities/Service";
+import { BookingStatus } from "@/entities/Booking";
 
 export interface CreateServiceDto {
   title: string;
@@ -53,6 +54,7 @@ export interface DeleteServiceDto {
 // ===================== PAGINATION =====================
 
 export interface PaginationDto {
+  adminId: string;
   page?: number;
   limit?: number;
 }
@@ -62,21 +64,47 @@ export interface PaginationDto {
 export interface GetServiceBookingsDto extends PaginationDto {
   serviceId: string;
   adminId: string; // ownership validation
-  status?: "pending" | "confirmed" | "cancelled";
+  status?: BookingStatus;
 }
 
 export interface ServiceBookingResponseDTO {
   bookingId: string;
+  serviceId: string;
   userId: string;
+  userName: string;
   startDate: Date;
   endDate: Date;
   totalPrice: number;
-  status: "pending" | "confirmed" | "cancelled";
+  status: BookingStatus;
   createdAt?: Date;
 }
 
 export interface PaginatedServiceBookingsDTO {
   data: ServiceBookingResponseDTO[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface UpdateBookingStatusDto {
+  serviceId: string;
+  bookingId: string;
+  adminId: string;
+  status: BookingStatus;
+}
+
+export interface BookingStatusUpdateResponseDTO {
+  bookingId: string;
+  serviceId: string;
+  status: BookingStatus;
+  message: string;
+}
+
+// ===================== PAGINATED SERVICES =====================
+
+export interface PaginatedServicesDTO {
+  data: ServiceResponseDTO[];
   total: number;
   page: number;
   limit: number;

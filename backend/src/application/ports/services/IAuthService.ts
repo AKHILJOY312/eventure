@@ -3,7 +3,7 @@ import { UserRole } from "@/entities/User";
 export interface IAuthService {
   /** Encryption */
   hashContent(plain: string): Promise<string>;
-  comparePassword(plain: string, hash: string): Promise<boolean>;
+  compareContent(plain: string, hash: string): Promise<boolean>;
 
   /** Token Management */
 

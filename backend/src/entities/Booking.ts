@@ -1,11 +1,14 @@
-export type BookingStatus = "pending" | "confirmed" | "cancelled";
+export enum BookingStatus {
+  Pending = "pending",
+  Confirmed = "confirmed",
+  Cancelled = "cancelled",
+}
 
 export interface BookingProps {
   id?: string;
-  userId: string; // Reference to User.id (string, not ObjectId)
-  serviceId: string; // Reference to Service.id (string, not ObjectId)
-  startDate: Date;
-  endDate: Date;
+  userId: string;
+  serviceId: string;
+  dates: Date[]; // normalized consecutive dates (start → end)
   totalPrice: number;
   status: BookingStatus;
   createdAt?: Date;
@@ -16,192 +19,112 @@ export class Booking {
   private _props: BookingProps;
 
   constructor(props: BookingProps) {
-    this._validateDateRange(props.startDate, props.endDate);
+    this._normalizeAndValidateDates(props.dates);
     this._validatePrice(props.totalPrice);
 
+    // We assign after validation (sorted & normalized dates are already set)
     this._props = {
       ...props,
-      status: props.status || "pending",
+      status: props.status || BookingStatus.Pending,
     };
   }
 
   // ===== PRIVATE VALIDATION HELPERS =====
-  private _validateDateRange(start: Date, end: Date): void {
-    if (start >= end) {
-      throw new Error("INVALID_DATE_RANGE: End date must be after start date");
+
+  private _normalizeAndValidateDates(dates: Date[]): Date[] {
+    if (!dates || dates.length === 0) {
+      throw new Error("Dates array cannot be empty");
     }
-    if (start < new Date()) {
-      throw new Error("INVALID_DATE: Cannot book dates in the past");
+
+    const normalized = dates.map((d) => {
+      const nd = new Date(d);
+      nd.setHours(0, 0, 0, 0);
+      return nd;
+    });
+
+    normalized.sort((a, b) => a.getTime() - b.getTime());
+
+    for (let i = normalized.length - 1; i > 0; i--) {
+      if (normalized[i].getTime() === normalized[i - 1].getTime()) {
+        normalized.splice(i, 1);
+      }
     }
+
+    for (let i = 1; i < normalized.length; i++) {
+      const diffDays =
+        (normalized[i].getTime() - normalized[i - 1].getTime()) / 86400000;
+      if (diffDays !== 1) {
+        throw new Error("Dates must be consecutive without gaps");
+      }
+    }
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    if (normalized[0] < todayStart) {
+      throw new Error("Cannot book dates in the past");
+    }
+
+    return normalized;
   }
 
   private _validatePrice(price: number): void {
     if (price < 0) {
-      throw new Error("INVALID_PRICE: Total price cannot be negative");
+      throw new Error("Total price cannot be negative");
     }
   }
 
-  // ===== GETTERS (Read-only access) =====
+  // ===== GETTERS =====
   get id(): string | undefined {
     return this._props.id;
   }
+
   get userId(): string {
     return this._props.userId;
   }
+
   get serviceId(): string {
     return this._props.serviceId;
   }
+
+  get dates(): Date[] {
+    return this._props.dates.map((d) => new Date(d)); // defensive copy
+  }
+
   get startDate(): Date {
-    return new Date(this._props.startDate);
+    return new Date(this._props.dates[0]);
   }
+
   get endDate(): Date {
-    return new Date(this._props.endDate);
+    return new Date(this._props.dates[this._props.dates.length - 1]);
   }
+
+  get nights(): number {
+    return this._props.dates.length;
+  }
+
   get totalPrice(): number {
     return this._props.totalPrice;
   }
+
   get status(): BookingStatus {
     return this._props.status;
   }
+
   get createdAt(): Date {
-    return this._props.createdAt || new Date();
+    return this._props.createdAt ?? new Date();
   }
+
   get updatedAt(): Date | undefined {
     return this._props.updatedAt;
   }
 
-  // ===== INFRASTRUCTURE SETTERS =====
+  // ===== INFRASTRUCTURE =====
   setId(id: string): void {
     this._props.id = id;
   }
 
-  // ===== COMPUTED PROPERTIES =====
-
-  /**
-   * Calculate booking duration in days (inclusive)
-   */
-  get durationInDays(): number {
-    const start = new Date(this._props.startDate);
-    const end = new Date(this._props.endDate);
-    const diffTime = Math.abs(end.getTime() - start.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 for inclusive end date
-  }
-
-  /**
-   * Check if booking is currently active (today falls within range)
-   */
-  get isActive(): boolean {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const start = new Date(this._props.startDate);
-    const end = new Date(this._props.endDate);
-
-    return today >= start && today <= end;
-  }
-
-  /**
-   * Check if booking is upcoming (starts in the future)
-   */
-  get isUpcoming(): boolean {
-    return new Date(this._props.startDate) > new Date();
-  }
-
-  // ===== BUSINESS METHODS =====
-
-  /**
-   * Confirm a pending booking
-   */
-  confirm(): void {
-    if (this._props.status !== "pending") {
-      throw new Error(
-        `INVALID_TRANSITION: Cannot confirm booking with status "${this._props.status}"`,
-      );
-    }
-    this._props.status = "confirmed";
-    this._props.updatedAt = new Date();
-  }
-
-  /**
-   * Cancel a booking (only pending or confirmed can be cancelled)
-   */
-  cancel(reason?: string): void {
-    if (this._props.status === "cancelled") {
-      throw new Error("INVALID_TRANSITION: Booking is already cancelled");
-    }
-    if (this._props.status === "confirmed" && this.isActive) {
-      // Optional: Add business rule - cannot cancel active confirmed bookings
-      // throw new Error("CANNOT_CANCEL_ACTIVE_BOOKING");
-    }
-    this._props.status = "cancelled";
-    this._props.updatedAt = new Date();
-  }
-
-  /**
-   * Update booking dates (only allowed for pending bookings)
-   */
-  updateDates(newStartDate: Date, newEndDate: Date): void {
-    if (this._props.status !== "pending") {
-      throw new Error(
-        "INVALID_OPERATION: Can only update dates for pending bookings",
-      );
-    }
-    this._validateDateRange(newStartDate, newEndDate);
-
-    this._props.startDate = newStartDate;
-    this._props.endDate = newEndDate;
-    this._props.updatedAt = new Date();
-    // Note: totalPrice should be recalculated by application service
-  }
-
-  /**
-   * Update total price (should only be called after recalculation)
-   */
-  updateTotalPrice(newPrice: number): void {
-    this._validatePrice(newPrice);
-    this._props.totalPrice = newPrice;
-    this._props.updatedAt = new Date();
-  }
-
-  /**
-   * Check if user owns this booking
-   */
-  isOwnedBy(userId: string): boolean {
-    return this._props.userId === userId;
-  }
-
-  /**
-   * Check if booking overlaps with a given date range
-   */
-  overlapsWith(start: Date, end: Date): boolean {
-    const existingStart = new Date(this._props.startDate);
-    const existingEnd = new Date(this._props.endDate);
-    const newStart = new Date(start);
-    const newEnd = new Date(end);
-
-    // Overlap formula: startA <= endB && endA >= startB
-    return existingStart <= newEnd && existingEnd >= newStart;
-  }
-
-  /**
-   * Get booking summary for UI/display
-   */
-  getSummary(): {
-    duration: number;
-    status: BookingStatus;
-    isEditable: boolean;
-    canCancel: boolean;
-  } {
-    return {
-      duration: this.durationInDays,
-      status: this._props.status,
-      isEditable: this._props.status === "pending",
-      canCancel: this._props.status !== "cancelled" && !this.isActive,
-    };
-  }
-
-  /**
-   * Static factory: Create new booking with calculated price
-   */
+  // ===== FACTORY METHOD =====
   static createNew(
     userId: string,
     serviceId: string,
@@ -209,20 +132,33 @@ export class Booking {
     endDate: Date,
     pricePerDay: number,
   ): Booking {
-    const duration =
-      Math.ceil(
-        (new Date(endDate).getTime() - new Date(startDate).getTime()) /
-          (1000 * 60 * 60 * 24),
-      ) + 1;
-    const totalPrice = duration * pricePerDay;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+
+    if (start >= end) {
+      throw new Error("End date must be after start date");
+    }
+
+    // Build consecutive dates array
+    const dates: Date[] = [];
+    const current = new Date(start);
+
+    while (current <= end) {
+      dates.push(new Date(current));
+      current.setDate(current.getDate() + 1);
+    }
+
+    const nights = dates.length;
+    const totalPrice = nights * pricePerDay;
 
     return new Booking({
       userId,
       serviceId,
-      startDate,
-      endDate,
+      dates,
       totalPrice,
-      status: "pending",
+      status: BookingStatus.Pending,
     });
   }
 }

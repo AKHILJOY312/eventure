@@ -20,7 +20,7 @@ export class JwtAuthService implements IAuthService {
     return bcrypt.hash(plain, 10);
   }
 
-  async comparePassword(plain: string, hash: string): Promise<boolean> {
+  async compareContent(plain: string, hash: string): Promise<boolean> {
     return bcrypt.compare(plain, hash);
   }
 
@@ -64,11 +64,6 @@ export class JwtAuthService implements IAuthService {
 
   /** Session Control */
 
-  /**
-   * PRO WAY: Invalidation by rotation.
-   * By changing the user's securityStamp in the DB, all existing access tokens
-   * (which contain the OLD stamp) will fail validation in your Auth Middleware.
-   */
   async invalidateUserSessions(userId: string): Promise<void> {
     const user = await this.userRepo.findById(userId);
     if (!user) return; // Silent return if user doesn't exist
@@ -79,19 +74,12 @@ export class JwtAuthService implements IAuthService {
     await this.userRepo.update(user);
   }
 
-  /**
-   * Generates a high-entropy random string for security stamps or secrets
-   */
   generateToken(): string {
     return crypto.randomBytes(32).toString("hex");
   }
 
   /** Verification */
 
-  /**
-   * PRO WAY: Generates a 6-digit OTP as a string to preserve leading zeros.
-   * Example: 001234
-   */
   generateOtp(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
