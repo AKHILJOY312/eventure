@@ -16,12 +16,16 @@ export function useBookings(query?: BookingQueryParams) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
 
   const fetchBookings = async () => {
     try {
       setLoading(true);
       const res = await getMyBookings(query);
       setBookings(res.data.data);
+      setTotalPages(res.data.totalPages ?? 1);
+      setTotal(res.data.total ?? 0);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Failed to fetch bookings";
@@ -33,7 +37,7 @@ export function useBookings(query?: BookingQueryParams) {
 
   useEffect(() => {
     fetchBookings();
-  }, []);
+  }, [query?.page, query?.limit, query?.status]);
 
   const addBooking = async (data: CreateBookingInput) => {
     try {
@@ -56,6 +60,8 @@ export function useBookings(query?: BookingQueryParams) {
     loading,
     error,
     creating,
+    totalPages,
+    total,
     refetch: fetchBookings,
     addBooking,
     // getPrice,

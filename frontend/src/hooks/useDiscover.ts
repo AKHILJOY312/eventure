@@ -16,12 +16,14 @@ export function useDiscover() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
 
   const search = async (params?: SearchServiceParams) => {
     try {
       setLoading(true);
       const res = await searchServices(params);
       setServices(res.data.data);
+      setTotalPages(res.data.totalPages ?? 1);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Failed to search services";
@@ -36,6 +38,7 @@ export function useDiscover() {
       setLoading(true);
       const res = await filterServicesByAvailability(params);
       setServices(res.data.data);
+      setTotalPages(res.data.totalPages ?? 1);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Failed to filter services";
@@ -65,6 +68,7 @@ export function useDiscover() {
     setSelectedService,
     loading,
     error,
+    totalPages,
     search,
     filterByAvailability,
     getDetails,

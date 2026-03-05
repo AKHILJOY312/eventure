@@ -12,6 +12,7 @@ import { useDiscover } from "@/hooks/useDiscover";
 import { DiscoverFilters } from "@/components/organisms/discover/DiscoverFilters";
 import { BookingModal } from "@/components/organisms/discover/BookingModal";
 import { ServiceCard } from "@/components/organisms/discover/ServiceCard"; // Import here
+import { Pagination } from "@/components/atoms/Pagination";
 import type { SearchServiceParams } from "@/types/discover.types";
 import { useBookings } from "@/hooks/useBookings";
 
@@ -19,6 +20,7 @@ function DiscoverPage() {
   const {
     services,
     loading,
+    totalPages,
     search,
     getDetails,
     selectedService,
@@ -35,8 +37,8 @@ function DiscoverPage() {
   });
   const { addBooking, creating } = useBookings();
 
-  const fetchServices = async () => {
-    const searchParams: SearchServiceParams = { page, limit: 10 };
+  const fetchServices = async (nextPage = page) => {
+    const searchParams: SearchServiceParams = { page: nextPage, limit: 10 };
     if (filters.keyword) searchParams.keyword = filters.keyword;
     if (filters.location) searchParams.location = filters.location;
     if (filters.date) searchParams.date = filters.date;
@@ -83,11 +85,12 @@ function DiscoverPage() {
         setFilter={(k, v) => setFilters((p) => ({ ...p, [k]: v }))}
         onApply={() => {
           setPage(1);
-          fetchServices();
+          fetchServices(1);
         }}
         onReset={() => {
           setFilters({ keyword: "", category: "", location: "", date: "" });
           setPage(1);
+          fetchServices(1);
         }}
       />
 
@@ -96,11 +99,20 @@ function DiscoverPage() {
       {loading ? (
         <CircularProgress sx={{ display: "block", mx: "auto", my: 4 }} />
       ) : (
-        <Stack spacing={2}>
-          {services.map((s) => (
-            <ServiceCard key={s.id} service={s} onViewDetails={getDetails} />
-          ))}
-        </Stack>
+        <>
+          <Stack spacing={2}>
+            {services.map((s) => (
+              <ServiceCard key={s.id} service={s} onViewDetails={getDetails} />
+            ))}
+          </Stack>
+          {services.length > 0 && (
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          )}
+        </>
       )}
 
       <BookingModal

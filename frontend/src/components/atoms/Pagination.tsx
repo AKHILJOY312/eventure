@@ -3,15 +3,18 @@ import { Box, Button, Typography } from "@mui/material";
 interface PaginationProps {
   currentPage: number;
   onPageChange: (newPage: number) => void;
-  // totalPages is helpful if your API provides it
+  totalPages?: number;
   hasMore?: boolean;
 }
 
 export function Pagination({
   currentPage,
   onPageChange,
+  totalPages,
   hasMore = true,
 }: PaginationProps) {
+  const canGoNext = totalPages ? currentPage < totalPages : hasMore;
+
   return (
     <Box
       sx={{
@@ -31,11 +34,14 @@ export function Pagination({
         Prev
       </Button>
 
-      <Typography fontWeight={600}>Page {currentPage}</Typography>
+      <Typography fontWeight={600}>
+        Page {currentPage}
+        {totalPages ? ` of ${totalPages}` : ""}
+      </Typography>
 
       <Button
         variant="outlined"
-        disabled={!hasMore} // Disable if no more data
+        disabled={!canGoNext}
         onClick={() => onPageChange(currentPage + 1)}
       >
         Next

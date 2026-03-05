@@ -22,6 +22,8 @@ export function useAdminServices() {
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(0);
   const [total, setTotal] = useState(0);
+  const [bookingsTotalPages, setBookingsTotalPages] = useState(1);
+  const [bookingsTotal, setBookingsTotal] = useState(0);
   const addService = async (data: ServiceInput) => {
     try {
       setLoading(true);
@@ -66,11 +68,17 @@ export function useAdminServices() {
     }
   };
 
-  const fetchServiceBookings = async (serviceId: string) => {
+  const fetchServiceBookings = async (
+    serviceId: string,
+    page = 1,
+    limit = 5,
+  ) => {
     try {
       setLoading(true);
-      const res = await getServiceBookings(serviceId);
+      const res = await getServiceBookings(serviceId, { page, limit });
       setBookings(res.data.data);
+      setBookingsTotal(res.data.total ?? 0);
+      setBookingsTotalPages(res.data.totalPages ?? 1);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Failed to fetch bookings";
@@ -132,6 +140,8 @@ export function useAdminServices() {
     services,
     total,
     totalPages,
+    bookingsTotal,
+    bookingsTotalPages,
     addService,
     editService,
     removeService,

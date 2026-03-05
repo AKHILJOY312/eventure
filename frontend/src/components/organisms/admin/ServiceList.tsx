@@ -6,6 +6,7 @@ import type { AdminService } from "@/types/service.types";
 type Props = {
   services: AdminService[];
   page: number;
+  totalPages: number;
   onPrev: () => void;
   onNext: () => void;
   onDelete: (id: string) => Promise<void>;
@@ -15,6 +16,7 @@ type Props = {
 export default function ServiceList({
   services,
   page,
+  totalPages,
   onPrev,
   onNext,
   onDelete,
@@ -120,10 +122,12 @@ export default function ServiceList({
           </Button>
 
           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-            Page {page}
+            Page {page} of {Math.max(totalPages, 1)}
           </Typography>
 
-          <Button onClick={onNext}>Next</Button>
+          <Button disabled={page >= totalPages} onClick={onNext}>
+            Next
+          </Button>
         </Box>
       )}
     </Box>

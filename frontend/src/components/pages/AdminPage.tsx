@@ -13,6 +13,8 @@ function AdminPage() {
     bookings,
     loading,
     error,
+    totalPages,
+    bookingsTotalPages,
     addService,
     removeService,
     fetchServiceBookings,
@@ -21,11 +23,20 @@ function AdminPage() {
   } = useAdminServices();
 
   const [page, setPage] = useState(1);
+  const [bookingsPage, setBookingsPage] = useState(1);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
+    null,
+  );
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     fetchAdminServices(page, 6);
   }, [page]);
+
+  useEffect(() => {
+    if (!selectedServiceId) return;
+    fetchServiceBookings(selectedServiceId, bookingsPage, 5);
+  }, [selectedServiceId, bookingsPage]);
 
   return (
     <Box sx={{ p: 4 }}>
@@ -78,18 +89,28 @@ function AdminPage() {
           <ServiceList
             services={services}
             page={page}
+            totalPages={totalPages}
             onPrev={() => setPage((p) => p - 1)}
             onNext={() => setPage((p) => p + 1)}
             onDelete={async (id) => {
               await removeService(id);
               await fetchAdminServices(page, 6);
             }}
-            onViewBookings={fetchServiceBookings}
+            onViewBookings={(id) => {
+              setSelectedServiceId(id);
+              setBookingsPage(1);
+            }}
           />
         </Grid>
 
         <Grid size={{ xs: 12, md: 4 }}>
-          <BookingsList bookings={bookings} onMoveStatus={moveBookingStatus} />
+          <BookingsList
+            bookings={bookings}
+            page={bookingsPage}
+            totalPages={bookingsTotalPages}
+            onPageChange={setBookingsPage}
+            onMoveStatus={moveBookingStatus}
+          />
         </Grid>
       </Grid>
 

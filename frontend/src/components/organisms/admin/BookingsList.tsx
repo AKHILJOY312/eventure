@@ -13,9 +13,13 @@ import type {
   AdminBookingStatus,
   AdminServiceBooking,
 } from "@/types/service.types";
+import { Pagination } from "@/components/atoms/Pagination";
 
 type Props = {
   bookings: AdminServiceBooking[];
+  page: number;
+  totalPages: number;
+  onPageChange: (newPage: number) => void;
   onMoveStatus: (
     serviceId: string,
     bookingId: string,
@@ -23,7 +27,13 @@ type Props = {
   ) => Promise<void>;
 };
 
-export function BookingsList({ bookings, onMoveStatus }: Props) {
+export function BookingsList({
+  bookings,
+  page,
+  totalPages,
+  onPageChange,
+  onMoveStatus,
+}: Props) {
   const isEmpty = bookings.length === 0;
   const dateFormatter = new Intl.DateTimeFormat("en-IN", {
     day: "numeric",
@@ -79,64 +89,71 @@ export function BookingsList({ bookings, onMoveStatus }: Props) {
           </Typography>
         </Paper>
       ) : (
-        <Stack spacing={2}>
-          {bookings.map((b) => (
-            <Paper
-              key={b.bookingId}
-              elevation={0}
-              sx={{
-                p: 2,
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                transition: "0.2s ease",
-                "&:hover": {
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.05)",
-                },
-              }}
-            >
-              <Box>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  User: {b.userName || b.userId}
-                </Typography>
+        <>
+          <Stack spacing={2}>
+            {bookings.map((b) => (
+              <Paper
+                key={b.bookingId}
+                elevation={0}
+                sx={{
+                  p: 2,
+                  border: `1px solid ${COLORS.border}`,
+                  borderRadius: 2,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  transition: "0.2s ease",
+                  "&:hover": {
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.05)",
+                  },
+                }}
+              >
+                <Box>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    User: {b.userName || b.userId}
+                  </Typography>
 
-                <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                  {formatDate(b.startDate)} to {formatDate(b.endDate)}
-                </Typography>
+                  <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                    {formatDate(b.startDate)} to {formatDate(b.endDate)}
+                  </Typography>
 
-                <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                  Rs.{b.totalPrice}
-                </Typography>
-              </Box>
+                  <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                    Rs.{b.totalPrice}
+                  </Typography>
+                </Box>
 
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Chip
-                  label={b.status.toUpperCase()}
-                  color={getStatusColor(b.status)}
-                  size="small"
-                />
-                <FormControl size="small" sx={{ minWidth: 130 }}>
-                  <Select
-                    value={b.status}
-                    onChange={(e) =>
-                      onMoveStatus(
-                        b.serviceId,
-                        b.bookingId,
-                        e.target.value as AdminBookingStatus,
-                      )
-                    }
-                  >
-                    <MenuItem value="pending">Pending</MenuItem>
-                    <MenuItem value="confirmed">Confirmed</MenuItem>
-                    <MenuItem value="cancelled">Cancelled</MenuItem>
-                  </Select>
-                </FormControl>
-              </Stack>
-            </Paper>
-          ))}
-        </Stack>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Chip
+                    label={b.status.toUpperCase()}
+                    color={getStatusColor(b.status)}
+                    size="small"
+                  />
+                  <FormControl size="small" sx={{ minWidth: 130 }}>
+                    <Select
+                      value={b.status}
+                      onChange={(e) =>
+                        onMoveStatus(
+                          b.serviceId,
+                          b.bookingId,
+                          e.target.value as AdminBookingStatus,
+                        )
+                      }
+                    >
+                      <MenuItem value="pending">Pending</MenuItem>
+                      <MenuItem value="confirmed">Confirmed</MenuItem>
+                      <MenuItem value="cancelled">Cancelled</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Stack>
+              </Paper>
+            ))}
+          </Stack>
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
+        </>
       )}
     </Box>
   );

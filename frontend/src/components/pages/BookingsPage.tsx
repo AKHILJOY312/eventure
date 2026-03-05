@@ -8,9 +8,15 @@ import {
 } from "@mui/material";
 import { useBookings } from "@/hooks/useBookings";
 import { COLORS } from "@/styles/theme";
+import { Pagination } from "@/components/atoms/Pagination";
+import { useState } from "react";
 
 function BookingsPage() {
-  const { bookings, loading, error } = useBookings();
+  const [page, setPage] = useState(1);
+  const { bookings, loading, error, totalPages } = useBookings({
+    page,
+    limit: 6,
+  });
   const isEmpty = bookings.length === 0;
 
   const getStatusColor = (status: string) => {
@@ -63,53 +69,61 @@ function BookingsPage() {
       )}
 
       {!isEmpty && (
-        <Stack spacing={2}>
-          {bookings.map((b) => (
-            <Paper
-              key={b.id}
-              elevation={0}
-              sx={{
-                p: 2,
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                "&:hover": { boxShadow: "0 4px 16px rgba(0,0,0,0.05)" },
-              }}
-            >
-              <Box>
-                <Typography variant="subtitle1" fontWeight={600}>
-                  {b.service?.title ?? "Service"}
-                </Typography>
-
-                <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                  {b.startDate} to {b.endDate}
-                </Typography>
-
-                <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                  {b.service?.category ?? "Category unavailable"} | {b.service?.location ?? "Location unavailable"}
-                </Typography>
-
-                <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                  Total: Rs.{b.totalPrice}
-                </Typography>
-
-                {b.service?.pricePerDay !== undefined && (
-                  <Typography variant="body2" sx={{ opacity: 0.7 }}>
-                    Price per day: Rs.{b.service.pricePerDay}
+        <>
+          <Stack spacing={2}>
+            {bookings.map((b) => (
+              <Paper
+                key={b.id}
+                elevation={0}
+                sx={{
+                  p: 2,
+                  border: `1px solid ${COLORS.border}`,
+                  borderRadius: 2,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  "&:hover": { boxShadow: "0 4px 16px rgba(0,0,0,0.05)" },
+                }}
+              >
+                <Box>
+                  <Typography variant="subtitle1" fontWeight={600}>
+                    {b.service?.title ?? "Service"}
                   </Typography>
-                )}
-              </Box>
 
-              <Chip
-                label={b.status.toUpperCase()}
-                color={getStatusColor(b.status)}
-                size="small"
-              />
-            </Paper>
-          ))}
-        </Stack>
+                  <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                    {b.startDate} to {b.endDate}
+                  </Typography>
+
+                  <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                    {b.service?.category ?? "Category unavailable"} |{" "}
+                    {b.service?.location ?? "Location unavailable"}
+                  </Typography>
+
+                  <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                    Total: Rs.{b.totalPrice}
+                  </Typography>
+
+                  {b.service?.pricePerDay !== undefined && (
+                    <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                      Price per day: Rs.{b.service.pricePerDay}
+                    </Typography>
+                  )}
+                </Box>
+
+                <Chip
+                  label={b.status.toUpperCase()}
+                  color={getStatusColor(b.status)}
+                  size="small"
+                />
+              </Paper>
+            ))}
+          </Stack>
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        </>
       )}
     </Box>
   );
