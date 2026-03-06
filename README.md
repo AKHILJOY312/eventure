@@ -67,12 +67,46 @@ cd frontend && npm run dev
 
 Frontend runs at `http://localhost:5173`, backend at `http://localhost:3000` (`/api/*`).
 
+## Docker Setup
+
+Backend still needs `backend/.env` for secrets (`ACCESS_TOKEN_SECRET`, `REFRESH_TOKEN_SECRET`, etc.).  
+`MONGO_URI` is overridden by Compose to use the Docker Mongo service.
+
+### Development (hot reload)
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+Or use the default root file:
+
+```bash
+docker compose up --build
+```
+
+Services:
+- frontend: `http://localhost:5173`
+- backend: `http://localhost:3000`
+- mongo: `mongodb://localhost:27017`
+
+### Production
+
+```bash
+docker compose -f docker-compose.prod.yml up --build -d
+```
+
+Services:
+- frontend (nginx): `http://localhost`
+- backend: internal only on port `3000` (proxied via frontend `/api`)
+- mongo: internal Docker network volume-backed DB
+
 ## Useful Commands
 
 ```bash
 cd backend && npm run build && npm run lint
 cd frontend && npm run build && npm run lint
-docker compose up --build
+docker compose -f docker-compose.dev.yml up --build
+docker compose -f docker-compose.prod.yml up --build -d
 ```
 
 ## Contribution

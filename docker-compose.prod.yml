@@ -1,0 +1,30 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      target: production
+    container_name: event_backend_prod
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      CLIENT_URL: http://localhost
+      MONGO_URI: mongodb://mongo:27017/event_mgmt_prod
+    expose:
+      - "3000"
+
+  frontend:
+    build:
+      context: ./frontend
+      target: production
+    container_name: event_frontend_prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo_prod_data:

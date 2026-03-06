@@ -4,6 +4,8 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import svgr from "vite-plugin-svgr";
 
+const apiProxyTarget = process.env.VITE_API_PROXY_TARGET || "http://localhost:3000";
+
 export default defineConfig({
   plugins: [
     svgr({
@@ -25,12 +27,12 @@ export default defineConfig({
     allowedHosts: ["glaiked-harry-unphotographed.ngrok-free.dev"],
     proxy: {
       "/api": {
-        target: "http://localhost:3000",
+        target: apiProxyTarget,
         changeOrigin: true,
         secure: false,
       },
       "/socket.io": {
-        target: "http://localhost:3000",
+        target: apiProxyTarget,
         ws: true,
       },
     },
