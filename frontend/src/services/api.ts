@@ -17,10 +17,10 @@ const api = axios.create({
 });
 
 const excludedUrls = [
+  "auth/sessions",
   "/auth/login",
   "/auth/register",
   "/auth/refresh-token",
-  "/auth/forgot-password",
   "/auth/verify-reset-token",
   "/auth/reset-password",
 ];

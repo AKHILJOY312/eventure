@@ -7,6 +7,7 @@ type Props = {
   services: AdminService[];
   page: number;
   totalPages: number;
+  emptyMessage?: string;
   onPrev: () => void;
   onNext: () => void;
   onDelete: (id: string) => Promise<void>;
@@ -17,6 +18,7 @@ export default function ServiceList({
   services,
   page,
   totalPages,
+  emptyMessage = "No services created yet.",
   onPrev,
   onNext,
   onDelete,
@@ -49,7 +51,7 @@ export default function ServiceList({
           }}
         >
           <Typography variant="body2" sx={{ opacity: 0.6 }}>
-            No services created yet.
+            {emptyMessage}
           </Typography>
         </Paper>
       ) : (

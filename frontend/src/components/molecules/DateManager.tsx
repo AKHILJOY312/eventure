@@ -9,15 +9,67 @@ type DateManagerProps = {
 
 export function DateManager({ dates, onUpdate }: DateManagerProps) {
   const [dateInput, setDateInput] = useState("");
+  const [rangeStart, setRangeStart] = useState("");
+  const [rangeEnd, setRangeEnd] = useState("");
+
+  const mergeDates = (incoming: string[]) => {
+    const merged = Array.from(new Set([...dates, ...incoming])).sort(
+      (a, b) => new Date(a).getTime() - new Date(b).getTime()
+    );
+    onUpdate(merged);
+  };
+
+  const buildDateRange = (start: string, end: string): string[] => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+      return [];
+    }
+    if (startDate > endDate) return [];
+
+    const result: string[] = [];
+    const cursor = new Date(startDate);
+
+    while (cursor <= endDate) {
+      result.push(cursor.toISOString().slice(0, 10));
+      cursor.setDate(cursor.getDate() + 1);
+    }
+
+    return result;
+  };
 
   const handleAddDate = () => {
-    if (!dateInput || dates.includes(dateInput)) return;
-    onUpdate([...dates, dateInput]);
+    if (!dateInput) return;
+    mergeDates([dateInput]);
     setDateInput("");
+  };
+
+  const handleAddRange = () => {
+    if (!rangeStart || !rangeEnd) return;
+    const rangeDates = buildDateRange(rangeStart, rangeEnd);
+    if (rangeDates.length === 0) return;
+    mergeDates(rangeDates);
+    setRangeStart("");
+    setRangeEnd("");
+  };
+
+  const handleAddNext7Days = () => {
+    const today = new Date();
+    const next7Days: string[] = [];
+    for (let i = 0; i < 7; i += 1) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      next7Days.push(date.toISOString().slice(0, 10));
+    }
+    mergeDates(next7Days);
   };
 
   const handleRemoveDate = (dateToRemove: string) => {
     onUpdate(dates.filter((d) => d !== dateToRemove));
+  };
+
+  const handleClearAll = () => {
+    onUpdate([]);
   };
 
   return (
@@ -29,7 +81,7 @@ export function DateManager({ dates, onUpdate }: DateManagerProps) {
       <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
         <TextField
           type="date"
-          label="Add Date"
+          label="Add Single Date"
           InputLabelProps={{ shrink: true }}
           value={dateInput}
           onChange={(e) => setDateInput(e.target.value)}
@@ -42,6 +94,39 @@ export function DateManager({ dates, onUpdate }: DateManagerProps) {
           startIcon={<AddIcon />}
         >
           Add
+        </Button>
+      </Stack>
+
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ mb: 2 }}>
+        <TextField
+          type="date"
+          label="Range Start"
+          InputLabelProps={{ shrink: true }}
+          value={rangeStart}
+          onChange={(e) => setRangeStart(e.target.value)}
+          size="small"
+          fullWidth
+        />
+        <TextField
+          type="date"
+          label="Range End"
+          InputLabelProps={{ shrink: true }}
+          value={rangeEnd}
+          onChange={(e) => setRangeEnd(e.target.value)}
+          size="small"
+          fullWidth
+        />
+        <Button variant="outlined" onClick={handleAddRange}>
+          Add Range
+        </Button>
+      </Stack>
+
+      <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+        <Button variant="text" size="small" onClick={handleAddNext7Days}>
+          Add Next 7 Days
+        </Button>
+        <Button variant="text" size="small" color="error" onClick={handleClearAll}>
+          Clear All
         </Button>
       </Stack>
 

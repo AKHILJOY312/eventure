@@ -15,6 +15,7 @@ import { ServiceCard } from "@/components/organisms/discover/ServiceCard"; // Im
 import { Pagination } from "@/components/atoms/Pagination";
 import type { SearchServiceParams } from "@/types/discover.types";
 import { useBookings } from "@/hooks/useBookings";
+import { useUi } from "@/hooks/useUi";
 
 function DiscoverPage() {
   const {
@@ -35,6 +36,7 @@ function DiscoverPage() {
     location: "",
     date: "",
   });
+  const { triggerAlert } = useUi();
   const { addBooking, creating } = useBookings();
 
   const fetchServices = async (nextPage = page) => {
@@ -62,12 +64,12 @@ function DiscoverPage() {
         dates: [formattedDate],
       });
 
-      alert("Booking successful!");
+      triggerAlert("Booking successful!", "success");
       setSelectedService(null);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Failed to fetch bookings";
-      alert(message);
+      triggerAlert(message || "Failed to book", "error");
     }
   };
 

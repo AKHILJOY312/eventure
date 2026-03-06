@@ -1,248 +1,82 @@
-# Full Stack Developer Assignment: Event Booking Platform
+# Event Booking Platform
 
-## Objective
+A full-stack **Event Booking Platform** for discovering services (venue, hotel, caterer, DJ, cameraman), creating bookings, and managing services/bookings from an admin dashboard.
 
-Design and develop an application for an **Event Booking Platform** where users can search and book services such as marriage venues, hotels, caterers, cameramen, DJs, etc.
+## Highlights
 
-The system must support:
+- User service discovery with search + filters.
+- Booking flow with date availability checks.
+- Admin service CRUD and booking status management.
+- Booking lists with pagination (user + admin pages).
+- Clean layered backend architecture and typed frontend.
 
-- Service discovery with filtering
-- Booking management for users
-- Service management for admins
+## Tech Stack
 
----
+- Backend: Node.js, Express, TypeScript, MongoDB, Inversify, Zod
+- Frontend: React, Vite, TypeScript, MUI, Redux Toolkit
+- Infra: Docker Compose, Nginx (frontend container)
 
-## Task Overview
+## Project Structure
 
-Build a full-stack web application that allows:
+```text
+backend/
+  src/application          # use-cases, DTOs, ports
+  src/interface-adapters   # controllers, validators, HTTP layer
+  src/infra                # DB models/repos, server, auth, logger
+frontend/
+  src/components           # atoms/molecules/organisms/pages/templates
+  src/hooks                # reusable logic
+  src/services             # API clients
+  src/types                # shared types
+```
 
-- **Users** to search, filter, and book event-related services.
-- **Admins (service providers)** to manage their services and view bookings.
+## Run Locally
 
-### Tech Stack
+### 1) Install dependencies
 
-- **Backend:** Node.js with Express.js
-- **Frontend:** React
-- **Database:** NoSQL (MongoDB)
+```bash
+cd backend && npm install
+cd ../frontend && npm install
+```
 
----
+### 2) Configure environment
 
-# Functional Requirements
+Create `.env` files in `backend/` and `frontend/`.
 
----
+Required backend vars (minimum):
 
-## 1. User Features
+- `MONGO_URI`
+- `ACCESS_TOKEN_SECRET`
+- `REFRESH_TOKEN_SECRET`
+- `PORT` (default `3000`)
+- `CLIENT_URL` (default `http://localhost:5173`)
 
-### 1.1 User Registration & Authentication
+Optional frontend var:
 
-- Users must be able to:
-  - Sign up
-  - Log in
-- Passwords must be securely stored (hashed).
-- JWT must be used for authentication.
+- `VITE_SOCKET_URL`
 
----
+### 3) Start apps
 
-### 1.2 Event Booking
+```bash
+# backend
+cd backend && npm run dev
 
-Users should be able to:
+# frontend
+cd frontend && npm run dev
+```
 
-#### Search Services
+Frontend runs at `http://localhost:5173`, backend at `http://localhost:3000` (`/api/*`).
 
-Search for services such as:
+## Useful Commands
 
-- Venues
-- Hotels
-- Caterers
-- Cameramen
-- DJs
-- Other event-related services
+```bash
+cd backend && npm run build && npm run lint
+cd frontend && npm run build && npm run lint
+docker compose up --build
+```
 
-#### Filter Services By:
+## Contribution
 
-- Price range
-- Service category
-- Location
-- Availability (date-based filter)
-
-#### Service Details Page
-
-Each service must display:
-
-- Service title
-- Category
-- Description
-- Price per day
-- Availability status (based on dates)
-- Contact information or booking details
-
-#### Booking Functionality
-
-- Users can book a service for specific dates.
-- Booking confirmation must be stored in the database.
-- Booking must link:
-  - User
-  - Service provider
-  - Selected dates
-  - Total calculated price
-
----
-
-### 1.3 View Bookings
-
-Users must be able to:
-
-- View upcoming bookings
-- View past bookings
-
----
-
-## 2. Admin Features
-
-### 2.1 Admin Authentication
-
-- Admins must be able to log in securely.
-- JWT authentication required.
-
----
-
-### 2.2 Service Management
-
-Admins must be able to:
-
-- Add services
-- Edit services
-- Remove services
-
-Each service must include:
-
-- Title
-- Category (venue, caterer, DJ, etc.)
-- Price per day
-- Description
-- Availability dates
-- Contact details
-
----
-
-### 2.3 Booking Management
-
-- Admins should be able to view all bookings related to their services.
-
----
-
-## 3. Other Functionalities
-
-### 3.1 Search & Filtering
-
-- Keyword-based search
-- Support multiple filters at the same time
-
----
-
-### 3.2 Price Calculation
-
-- Total booking price must be calculated based on:
-  - Number of booked days
-  - Price per day
-
----
-
-### 3.3 Database Requirements
-
-The database must store:
-
-- Users
-- Services
-- Bookings
-
-Supported database types:
-
-- Relational: PostgreSQL, MySQL
-- NoSQL: MongoDB
-
----
-
-### 3.4 Security Requirements
-
-- Use JWT for authentication
-- Hash passwords securely
-- Data validation
-- Prevent SQL injection (if relational DB)
-- Follow basic security best practices
-
----
-
-# Deliverables
-
-## 1. Source Code
-
-- Well-structured and organized
-- Proper documentation
-- Clean folder structure
-
----
-
-## 2. README File
-
-Must include:
-
-- Setup instructions
-- Installation steps
-- Environment configuration
-- How to run the project
-- How to interact with the API
-
----
-
-## 3. API Documentation
-
-- Document all API routes
-- Use tools like:
-  - Swagger
-  - Postman collection
-
----
-
-## 4. Database Schema
-
-Provide schema including tables/collections for:
-
-- Users
-- Services
-- Bookings
-
----
-
-# Bonus (Optional)
-
-- Pagination for services list
-- Sorting functionality
-- Unit tests for key features
-- Email notifications for booking confirmations
-
----
-
-# Evaluation Criteria
-
-- Code readability and structure
-- Proper implementation of all required features
-- RESTful API design principles
-- Secure authentication implementation
-- Optimized and well-structured database schema
-
----
-
-# Submission
-
-Submit:
-
-- GitHub repository link  
-  **OR**
-- ZIP file containing the source code
-
-A short walkthrough of the solution will be required during the follow-up interview.
-
----
-
-**Good luck!**
+- Follow Conventional Commits (`feat:`, `fix:`, `refactor:`).
+- Keep PRs focused; include screenshots for UI changes and test steps.
+- Do not commit secrets or `.env` files.

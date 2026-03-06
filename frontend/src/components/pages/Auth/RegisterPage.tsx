@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   Paper,
@@ -11,53 +11,51 @@ import {
   Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { COLORS, MONO_FONT } from "@/styles/theme";
-// Assuming you have a register thunk in your authThunks
 import { registerUser } from "@/redux/thunk/authThunks";
+import { createZodFormikValidator } from "@/utils/zodFormik";
+import { registerFormSchema } from "@/utils/zodSchemas";
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    validate: createZodFormikValidator(registerFormSchema),
+    validateOnBlur: true,
+    validateOnChange: true,
+    onSubmit: async (values) => {
+      const result = await dispatch(
+        registerUser({
+          name: values.name.trim(),
+          email: values.email.trim(),
+          password: values.password,
+          confirmPassword: values.confirmPassword,
+        }),
+      );
+
+      if (registerUser.fulfilled.match(result)) {
+        navigate("/verify-email");
+      }
+    },
   });
 
-  const [localError, setLocalError] = useState("");
+  const fieldError = (
+    field: "name" | "email" | "password" | "confirmPassword",
+  ) => (formik.touched[field] && formik.errors[field] ? formik.errors[field] : "");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (localError) setLocalError("");
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Pro-level validation
-    if (formData.password !== formData.confirmPassword) {
-      return setLocalError("PASSWORDS_DO_NOT_MATCH");
-    }
-
-    // Logic: Dispatch registration.
-    // On success, the thunk should update state to trigger navigation to /verify-email
-    const result = await dispatch(
-      registerUser({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
-      }),
-    );
-
-    if (registerUser.fulfilled.match(result)) {
-      navigate("/verify-email");
-    }
-  };
+  const hasFieldError = (
+    field: "name" | "email" | "password" | "confirmPassword",
+  ) => Boolean(fieldError(field));
 
   const inputStyles = {
     bgcolor: "rgba(255,255,255,0.05)",
@@ -68,7 +66,6 @@ const RegisterPage: React.FC = () => {
       borderBottomColor: "rgba(255,255,255,0.1)",
     },
   };
-  const displayError = (localError || error || "").toString().toUpperCase();
 
   return (
     <Box
@@ -116,7 +113,7 @@ const RegisterPage: React.FC = () => {
           RESERVED_FOR_AUTHORIZED_PERSONNEL
         </Typography>
 
-        {(error || localError) && (
+        {error && (
           <Alert
             severity="error"
             sx={{
@@ -128,11 +125,11 @@ const RegisterPage: React.FC = () => {
               fontSize: "0.7rem",
             }}
           >
-            {displayError}
+            {error.toUpperCase()}
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={formik.handleSubmit}>
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
@@ -141,11 +138,17 @@ const RegisterPage: React.FC = () => {
                 name="name"
                 label="NAME"
                 variant="filled"
-                value={formData.name}
-                onChange={handleChange}
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={hasFieldError("name")}
+                helperText={fieldError("name") || " "}
                 InputProps={{ sx: inputStyles }}
                 InputLabelProps={{
                   sx: { color: "rgba(255,255,255,0.5)", fontFamily: MONO_FONT },
+                }}
+                FormHelperTextProps={{
+                  sx: { color: "#ff9e9e", fontFamily: MONO_FONT, fontSize: "0.65rem" },
                 }}
               />
             </Grid>
@@ -157,11 +160,17 @@ const RegisterPage: React.FC = () => {
                 name="email"
                 label="EMAIL_ADDRESS"
                 variant="filled"
-                value={formData.email}
-                onChange={handleChange}
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={hasFieldError("email")}
+                helperText={fieldError("email") || " "}
                 InputProps={{ sx: inputStyles }}
                 InputLabelProps={{
                   sx: { color: "rgba(255,255,255,0.5)", fontFamily: MONO_FONT },
+                }}
+                FormHelperTextProps={{
+                  sx: { color: "#ff9e9e", fontFamily: MONO_FONT, fontSize: "0.65rem" },
                 }}
               />
             </Grid>
@@ -174,11 +183,17 @@ const RegisterPage: React.FC = () => {
                 name="password"
                 label="PASSWORD"
                 variant="filled"
-                value={formData.password}
-                onChange={handleChange}
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={hasFieldError("password")}
+                helperText={fieldError("password") || " "}
                 InputProps={{ sx: inputStyles }}
                 InputLabelProps={{
                   sx: { color: "rgba(255,255,255,0.5)", fontFamily: MONO_FONT },
+                }}
+                FormHelperTextProps={{
+                  sx: { color: "#ff9e9e", fontFamily: MONO_FONT, fontSize: "0.65rem" },
                 }}
               />
             </Grid>
@@ -191,11 +206,17 @@ const RegisterPage: React.FC = () => {
                 name="confirmPassword"
                 label="CONFIRM_PASS"
                 variant="filled"
-                value={formData.confirmPassword}
-                onChange={handleChange}
+                value={formik.values.confirmPassword}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={hasFieldError("confirmPassword")}
+                helperText={fieldError("confirmPassword") || " "}
                 InputProps={{ sx: inputStyles }}
                 InputLabelProps={{
                   sx: { color: "rgba(255,255,255,0.5)", fontFamily: MONO_FONT },
+                }}
+                FormHelperTextProps={{
+                  sx: { color: "#ff9e9e", fontFamily: MONO_FONT, fontSize: "0.65rem" },
                 }}
               />
             </Grid>
