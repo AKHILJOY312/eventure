@@ -28,8 +28,8 @@ jobs:
 
       - name: Push Backend Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/pixaltask-backend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/event_ure-backend:latest
 
       - name: Push Frontend Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/pixaltask-frontend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/event_ure-frontend:latest
