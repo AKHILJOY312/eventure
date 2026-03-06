@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
-import { Box, Grid, Typography, Button, CircularProgress } from "@mui/material";
-import { Add } from "@mui/icons-material";
+import {
+  Box,
+  Grid,
+  Typography,
+  Button,
+  CircularProgress,
+  TextField,
+  InputAdornment,
+} from "@mui/material";
+import { Add, Search } from "@mui/icons-material";
 import { COLORS } from "@/styles/theme";
 import { useAdminServices } from "@/hooks/useAdminServices";
+import { useDebounce } from "@/hooks/useDebounce";
 import ServiceList from "../organisms/admin/ServiceList";
 import { BookingsList } from "../organisms/admin/BookingsList";
 import CreateServiceModal from "../organisms/admin/CreateServiceModal";
@@ -28,6 +37,17 @@ function AdminPage() {
     null,
   );
   const [openModal, setOpenModal] = useState(false);
+  const [serviceSearch, setServiceSearch] = useState("");
+  const debouncedServiceSearch = useDebounce(serviceSearch, 400);
+
+  const normalizedSearch = debouncedServiceSearch.trim().toLowerCase();
+  const filteredServices = services.filter((service) => {
+    if (!normalizedSearch) return true;
+
+    return [service.title, service.category, service.location, service.description]
+      .filter(Boolean)
+      .some((value) => value!.toLowerCase().includes(normalizedSearch));
+  });
 
   useEffect(() => {
     fetchAdminServices(page, 6);
@@ -86,10 +106,31 @@ function AdminPage() {
 
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, md: 8 }}>
+          <TextField
+            fullWidth
+            size="small"
+            value={serviceSearch}
+            onChange={(event) => setServiceSearch(event.target.value)}
+            placeholder="Search services by title, category, location..."
+            sx={{ mb: 2 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+          />
+
           <ServiceList
-            services={services}
+            services={filteredServices}
             page={page}
             totalPages={totalPages}
+            emptyMessage={
+              normalizedSearch
+                ? "No services found for your search."
+                : "No services created yet."
+            }
             onPrev={() => setPage((p) => p - 1)}
             onNext={() => setPage((p) => p + 1)}
             onDelete={async (id) => {
