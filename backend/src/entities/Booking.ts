@@ -61,10 +61,6 @@ export class Booking {
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
 
-    if (normalized[0] < todayStart) {
-      throw new Error("Cannot book dates in the past");
-    }
-
     return normalized;
   }
 
@@ -132,11 +128,20 @@ export class Booking {
     endDate: Date,
     pricePerDay: number,
   ): Booking {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const start = new Date(startDate);
     const end = new Date(endDate);
     start.setHours(0, 0, 0, 0);
     end.setHours(0, 0, 0, 0);
 
+    // 1. Check against "today"
+    if (start < today) {
+      throw new Error("Cannot book dates in the past");
+    }
+
+    // 2. Check range
     if (start >= end) {
       throw new Error("End date must be after start date");
     }
