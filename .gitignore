@@ -32,3 +32,5 @@ gitAuto.sh
 taskpem.pem
 AGENTS.md
 trash.md
+local.sh
+production.sh
