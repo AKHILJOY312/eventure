@@ -19,7 +19,10 @@ import { createServiceFormSchema } from "@/utils/zodSchemas";
 type Props = {
   open: boolean;
   onClose: () => void;
-  onCreate: (data: ServiceInput) => Promise<void>;
+  title?: string;
+  submitLabel?: string;
+  initialValues?: ServiceInput;
+  onSubmit: (data: ServiceInput) => Promise<void>;
 };
 
 const CATEGORIES: ServiceCategory[] = [
@@ -41,15 +44,23 @@ const INITIAL_STATE: ServiceInput = {
   availableDates: [],
 };
 
-function CreateServiceModal({ open, onClose, onCreate }: Props) {
+function CreateServiceModal({
+  open,
+  onClose,
+  title = "Create New Service",
+  submitLabel = "Create Service",
+  initialValues,
+  onSubmit,
+}: Props) {
   const formik = useFormik<ServiceInput>({
-    initialValues: INITIAL_STATE,
+    initialValues: initialValues ?? INITIAL_STATE,
+    enableReinitialize: true,
     validate: createZodFormikValidator(createServiceFormSchema),
     validateOnBlur: true,
     validateOnChange: true,
     onSubmit: async (values, helpers) => {
       try {
-        await onCreate({
+        await onSubmit({
           ...values,
           title: values.title.trim(),
           location: values.location.trim(),
@@ -80,7 +91,7 @@ function CreateServiceModal({ open, onClose, onCreate }: Props) {
   return (
     <Dialog open={open} onClose={handleCancel} fullWidth maxWidth="sm">
       <form onSubmit={formik.handleSubmit}>
-        <DialogTitle sx={{ fontWeight: 700 }}>Create New Service</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 700 }}>{title}</DialogTitle>
 
         <DialogContent>
           <Stack spacing={2} mt={1}>
@@ -176,7 +187,7 @@ function CreateServiceModal({ open, onClose, onCreate }: Props) {
             disabled={formik.isSubmitting}
             sx={{ bgcolor: COLORS.accent, "&:hover": { bgcolor: "#e88840" } }}
           >
-            Create Service
+            {submitLabel}
           </Button>
         </DialogActions>
       </form>

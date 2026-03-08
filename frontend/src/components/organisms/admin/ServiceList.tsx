@@ -1,5 +1,5 @@
 import { Box, Typography, Paper, Button, Stack } from "@mui/material";
-import { Delete, Event } from "@mui/icons-material";
+import { Delete, Edit, Event } from "@mui/icons-material";
 import { COLORS } from "@/styles/theme";
 import type { AdminService } from "@/types/service.types";
 
@@ -10,6 +10,7 @@ type Props = {
   emptyMessage?: string;
   onPrev: () => void;
   onNext: () => void;
+  onEdit: (service: AdminService) => void;
   onDelete: (id: string) => Promise<void>;
   onViewBookings: (id: string) => void;
 };
@@ -21,6 +22,7 @@ export default function ServiceList({
   emptyMessage = "No services created yet.",
   onPrev,
   onNext,
+  onEdit,
   onDelete,
   onViewBookings,
 }: Props) {
@@ -90,6 +92,14 @@ export default function ServiceList({
                   onClick={() => onViewBookings(s.id)}
                 >
                   Bookings
+                </Button>
+
+                <Button
+                  size="small"
+                  startIcon={<Edit />}
+                  onClick={() => onEdit(s)}
+                >
+                  Edit
                 </Button>
 
                 <Button

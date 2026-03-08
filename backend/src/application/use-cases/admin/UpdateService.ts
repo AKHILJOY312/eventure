@@ -27,16 +27,32 @@ export class UpdateService implements IUpdateService {
       throw new NotFoundError("SERVICE_NOT_FOUND_OR_NOT_OWNED");
     }
 
+    const updates: Partial<
+      Pick<
+        UpdateServiceDto,
+        | "title"
+        | "category"
+        | "pricePerDay"
+        | "description"
+        | "location"
+        | "contactDetails"
+        | "imageUrl"
+      >
+    > = {};
+
+    if (dto.title !== undefined) updates.title = dto.title;
+    if (dto.category !== undefined) updates.category = dto.category;
+    if (dto.pricePerDay !== undefined) updates.pricePerDay = dto.pricePerDay;
+    if (dto.description !== undefined) updates.description = dto.description;
+    if (dto.location !== undefined) updates.location = dto.location;
+    if (dto.contactDetails !== undefined)
+      updates.contactDetails = dto.contactDetails;
+    if (dto.imageUrl !== undefined) updates.imageUrl = dto.imageUrl;
+
     // Let entity handle invariants
-    service.updateDetails({
-      title: dto.title,
-      category: dto.category,
-      pricePerDay: dto.pricePerDay,
-      description: dto.description,
-      location: dto.location,
-      contactDetails: dto.contactDetails,
-      imageUrl: dto.imageUrl,
-    });
+    if (Object.keys(updates).length > 0) {
+      service.updateDetails(updates);
+    }
 
     if (dto.availableDates !== undefined) {
       service.updateAvailableDates(dto.availableDates.map((d) => new Date(d)));
