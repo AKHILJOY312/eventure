@@ -17,6 +17,7 @@ import { HTTP_STATUS } from "@/interface-adapters/http/constants/httpStatus";
 import { globalErrorHandler } from "./express/middleware/globalErrorHandler";
 import { logger, morganMiddleware } from "../logger/logger";
 import { ENV } from "@/config/env.config";
+import { startSwaggerServer } from "./swagger/swaggerServer";
 
 export const app = express();
 const server = http.createServer(app);
@@ -70,6 +71,7 @@ export async function startServer(): Promise<void> {
   await connectDB();
   server.listen(PORT, () => {
     logger.info(`Astra Backend running on http://localhost:${PORT}`);
+    startSwaggerServer();
   });
 }
 
