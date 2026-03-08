@@ -13,8 +13,8 @@ export interface IAuthService {
     role: UserRole,
     stamp: string,
   ): string;
-  generateRefreshToken(userId: string): string;
-  verifyRefreshToken(token: string): { id: string } | null;
+  generateRefreshToken(userId: string, stamp: string): string;
+  verifyRefreshToken(token: string): { id: string; stamp: string } | null;
 
   /** Session Control */
 

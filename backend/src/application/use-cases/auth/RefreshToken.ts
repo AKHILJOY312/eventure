@@ -14,7 +14,9 @@ export class RefreshToken implements IRefreshToken {
     @inject(TYPES.AuthService) private _authSvc: IAuthService,
   ) {}
 
-  async execute(refreshToken: string): Promise<{ accessToken: string }> {
+  async execute(
+    refreshToken: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     // 1. Verify the refresh token structure
     const decoded = this._authSvc.verifyRefreshToken(refreshToken);
     if (!decoded) throw new UnauthorizedError("INVALID_REFRESH_TOKEN");
@@ -25,14 +27,27 @@ export class RefreshToken implements IRefreshToken {
       throw new UnauthorizedError("SESSION_EXPIRED_OR_INVALID");
     }
 
-    // 3. Generate new Access Token using the current Security Stamp
+    if (decoded.stamp !== user.securityStamp) {
+      throw new UnauthorizedError("SESSION_EXPIRED_OR_INVALID");
+    }
+
+    // 3. Rotate stamp so the just-used refresh token cannot be replayed
+    const rotatedStamp = this._authSvc.generateToken();
+    user.updateSecurityStamp(rotatedStamp);
+    await this._userRepo.update(user);
+
+    // 4. Issue new token pair bound to the rotated stamp
     const accessToken = this._authSvc.generateAccessToken(
       user.id!,
       user.email,
       user.role,
-      user.securityStamp || "",
+      rotatedStamp,
+    );
+    const newRefreshToken = this._authSvc.generateRefreshToken(
+      user.id!,
+      rotatedStamp,
     );
 
-    return { accessToken };
+    return { accessToken, refreshToken: newRefreshToken };
   }
 }

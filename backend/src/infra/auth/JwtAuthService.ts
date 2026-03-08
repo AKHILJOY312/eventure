@@ -43,20 +43,21 @@ export class JwtAuthService implements IAuthService {
     );
   }
 
-  generateRefreshToken(userId: string): string {
+  generateRefreshToken(userId: string, stamp: string): string {
     const options: SignOptions = {
       expiresIn: ENV.JWT.REFRESH_EXPIRY as SignOptions["expiresIn"],
     };
 
-    return jwt.sign({ id: userId }, ENV.JWT.REFRESH_SECRET!, options);
+    return jwt.sign({ id: userId, stamp }, ENV.JWT.REFRESH_SECRET!, options);
   }
 
-  verifyRefreshToken(token: string): { id: string } | null {
+  verifyRefreshToken(token: string): { id: string; stamp: string } | null {
     try {
       const decoded = jwt.verify(token, ENV.JWT.REFRESH_SECRET!) as {
         id: string;
+        stamp: string;
       };
-      return { id: decoded.id };
+      return { id: decoded.id, stamp: decoded.stamp };
     } catch {
       return null;
     }

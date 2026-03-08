@@ -14,6 +14,7 @@ import {
 import {
   registerSchema,
   verifyEmailSchema,
+  loginSchema,
 } from "@/interface-adapters/http/validators/userAuthValidators";
 import {
   IRegisterUser,
@@ -52,7 +53,12 @@ export class AuthController {
   };
 
   login = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const validatedData = loginSchema.safeParse(req.body);
+    if (!validatedData.success) {
+      throw new ValidationError(validatedData.error.issues[0].message);
+    }
+
+    const { email, password } = validatedData.data;
     const { accessToken, refreshToken, user } = await this.loginUC.execute(
       email,
       password,
@@ -66,7 +72,8 @@ export class AuthController {
     const token = req.cookies.refreshToken;
     if (!token) throw new UnauthorizedError(AUTH_MESSAGES.NO_REFRESH_TOKEN);
 
-    const { accessToken } = await this.refreshUC.execute(token);
+    const { accessToken, refreshToken } = await this.refreshUC.execute(token);
+    setRefreshTokenCookie(res, refreshToken);
     res.json({ accessToken });
   };
 
