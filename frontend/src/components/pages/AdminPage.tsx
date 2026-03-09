@@ -12,6 +12,7 @@ import { Add, Search } from "@mui/icons-material";
 import { COLORS } from "@/styles/theme";
 import { useAdminServices } from "@/hooks/useAdminServices";
 import { useDebounce } from "@/hooks/useDebounce";
+import type { AdminService, ServiceInput } from "@/types/service.types";
 import ServiceList from "../organisms/admin/ServiceList";
 import { BookingsList } from "../organisms/admin/BookingsList";
 import CreateServiceModal from "../organisms/admin/CreateServiceModal";
@@ -25,6 +26,7 @@ function AdminPage() {
     totalPages,
     bookingsTotalPages,
     addService,
+    editService,
     removeService,
     fetchServiceBookings,
     fetchAdminServices,
@@ -37,6 +39,9 @@ function AdminPage() {
     null,
   );
   const [openModal, setOpenModal] = useState(false);
+  const [editingService, setEditingService] = useState<AdminService | null>(
+    null,
+  );
   const [serviceSearch, setServiceSearch] = useState("");
   const debouncedServiceSearch = useDebounce(serviceSearch, 400);
 
@@ -57,6 +62,24 @@ function AdminPage() {
     if (!selectedServiceId) return;
     fetchServiceBookings(selectedServiceId, bookingsPage, 5);
   }, [selectedServiceId, bookingsPage]);
+
+  const closeServiceModal = () => {
+    setOpenModal(false);
+    setEditingService(null);
+  };
+
+  const toFormValues = (service: AdminService): ServiceInput => ({
+    title: service.title,
+    category: service.category as ServiceInput["category"],
+    pricePerDay: service.pricePerDay,
+    description: service.description ?? "",
+    location: service.location,
+    contactDetails: service.contactDetails ?? "",
+    imageUrl: service.imageUrl ?? "",
+    availableDates:
+      service.availableDates?.map((date) => new Date(date).toISOString().slice(0, 10)) ??
+      [],
+  });
 
   return (
     <Box sx={{ p: 4 }}>
@@ -79,7 +102,10 @@ function AdminPage() {
         <Button
           variant="contained"
           startIcon={<Add />}
-          onClick={() => setOpenModal(true)}
+          onClick={() => {
+            setEditingService(null);
+            setOpenModal(true);
+          }}
           sx={{
             bgcolor: COLORS.accent,
             "&:hover": {
@@ -133,6 +159,10 @@ function AdminPage() {
             }
             onPrev={() => setPage((p) => p - 1)}
             onNext={() => setPage((p) => p + 1)}
+            onEdit={(service) => {
+              setEditingService(service);
+              setOpenModal(true);
+            }}
             onDelete={async (id) => {
               await removeService(id);
               await fetchAdminServices(page, 6);
@@ -157,11 +187,18 @@ function AdminPage() {
 
       <CreateServiceModal
         open={openModal}
-        onClose={() => setOpenModal(false)}
-        onCreate={async (data) => {
-          await addService(data);
+        onClose={closeServiceModal}
+        title={editingService ? "Edit Service" : "Create New Service"}
+        submitLabel={editingService ? "Update Service" : "Create Service"}
+        initialValues={editingService ? toFormValues(editingService) : undefined}
+        onSubmit={async (data) => {
+          if (editingService) {
+            await editService(editingService.id, data);
+          } else {
+            await addService(data);
+          }
           await fetchAdminServices(page, 6);
-          setOpenModal(false);
+          closeServiceModal();
         }}
       />
     </Box>
