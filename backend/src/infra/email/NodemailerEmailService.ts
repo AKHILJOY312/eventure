@@ -30,13 +30,15 @@ export class NodemailerEmailService implements IEmailService {
     });
 
     // Verification check for SMTP availability
-    this.transporter.verify((error) => {
-      if (error) {
-        console.error("SMTP connection failed:", error);
-      } else {
-        console.log("SMTP ready – Email service is active.");
-      }
-    });
+    if (ENV.NODE_ENV !== "test") {
+      this.transporter.verify((error) => {
+        if (error) {
+          console.error("SMTP connection failed:", error);
+        } else {
+          console.log("SMTP ready - Email service is active.");
+        }
+      });
+    }
   }
 
   /**
@@ -159,3 +161,4 @@ export class NodemailerEmailService implements IEmailService {
     }
   }
 }
+

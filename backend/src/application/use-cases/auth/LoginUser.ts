@@ -38,7 +38,10 @@ export class LoginUser implements ILoginUser {
       user.role,
       user.securityStamp!,
     );
-    const refreshToken = this._authSvc.generateRefreshToken(user.id!);
+    const refreshToken = this._authSvc.generateRefreshToken(
+      user.id!,
+      user.securityStamp!,
+    );
 
     return {
       accessToken,

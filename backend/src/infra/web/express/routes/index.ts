@@ -7,11 +7,6 @@ import { getDiscoverRoutes } from "./discover.routes";
 
 const router = Router();
 
-router.use((req, res, next) => {
-  console.log("req.body:", req.body);
-  next();
-});
-
 router.use("/auth", getAuthRoutes(container));
 router.use("/admin", getAdminRoutes(container));
 router.use("/bookings", getBookingRoutes(container));

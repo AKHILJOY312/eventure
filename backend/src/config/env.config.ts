@@ -1,6 +1,7 @@
 export const ENV = {
   NODE_ENV: process.env.NODE_ENV || "development",
   PORT: process.env.PORT || 3000,
+  SWAGGER_PORT: process.env.SWAGGER_PORT || 3001,
   CLIENT_URL: process.env.CLIENT_URL || "http://localhost:5173",
 
   DATABASE: {

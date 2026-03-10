@@ -17,11 +17,10 @@ import { HTTP_STATUS } from "@/interface-adapters/http/constants/httpStatus";
 import { globalErrorHandler } from "./express/middleware/globalErrorHandler";
 import { logger, morganMiddleware } from "../logger/logger";
 import { ENV } from "@/config/env.config";
+import { startSwaggerServer } from "./swagger/swaggerServer";
 
-const app = express();
+export const app = express();
 const server = http.createServer(app);
-
-connectDB();
 
 app.use(express.json());
 app.use(cookieParser());
@@ -67,6 +66,15 @@ app.all("*", (req, res) => {
 });
 
 const PORT = ENV.PORT;
-server.listen(PORT, () => {
-  logger.info(`Astra Backend running on http://localhost:${PORT}`);
-});
+
+export async function startServer(): Promise<void> {
+  await connectDB();
+  server.listen(PORT, () => {
+    logger.info(`Astra Backend running on http://localhost:${PORT}`);
+    startSwaggerServer();
+  });
+}
+
+if (ENV.NODE_ENV !== "test") {
+  void startServer();
+}
