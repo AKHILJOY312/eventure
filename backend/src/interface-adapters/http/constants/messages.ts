@@ -30,4 +30,5 @@ export const BOOKING_MESSAGES = {
   BOOKING_CREATED: "Booking created successfully",
   PRICE_CALCULATED: "Price calculated successfully",
   BOOKINGS_FETCHED: "Bookings retrieved successfully",
+  BOOKING_CANCELLED: "Booking cancelled successfully",
 } as const;

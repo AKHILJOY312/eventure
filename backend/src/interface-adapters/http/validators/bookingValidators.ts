@@ -68,3 +68,7 @@ export const calculatePriceQuerySchema = z
     message: "End date must be after start date",
     path: ["endDate"],
   });
+
+export const cancelBookingSchema = z.object({
+  bookingId: z.string().min(1, "bookingId is required"),
+});

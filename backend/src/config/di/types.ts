@@ -37,7 +37,7 @@ const TYPES = {
   CalculateBookingPrice: Symbol.for("CalculateBookingPrice"),
   CreateBooking: Symbol.for("CreateBooking"),
   GetUserBookingHistory: Symbol.for("GetUserBookingHistory"),
-
+  CancelBooking: Symbol.for("CancelBooking"),
   //Discovery
   SearchServices: Symbol.for("SearchServices"),
   FilterServicesByAvailability: Symbol.for("FilterServicesByAvailability"),

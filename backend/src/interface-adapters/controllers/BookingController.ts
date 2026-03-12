@@ -10,12 +10,14 @@ import {
   createBookingSchema,
   getUserBookingsQuerySchema,
   calculatePriceQuerySchema,
+  cancelBookingSchema,
 } from "@/interface-adapters/http/validators/bookingValidators";
 
 import {
   ICreateBooking,
   IGetUserBookingHistory,
   ICalculateBookingPrice,
+  ICancelBooking,
 } from "@/application/ports/use-cases/booking/IBookingUseCase";
 
 @injectable()
@@ -29,6 +31,7 @@ export class BookingController {
 
     @inject(TYPES.CalculateBookingPrice)
     private calculateBookingPriceUC: ICalculateBookingPrice,
+    @inject(TYPES.CancelBooking) private cancelBookingUC: ICancelBooking,
   ) {}
 
   // POST /bookings
@@ -89,5 +92,21 @@ export class BookingController {
     const result = await this.calculateBookingPriceUC.execute(validated.data);
 
     res.status(HTTP_STATUS.OK).json(result);
+  };
+  cancelBooking = async (req: Request, res: Response) => {
+    const validated = cancelBookingSchema.safeParse(req.body);
+
+    if (!validated.success) {
+      throw new ValidationError(validated.error.issues[0].message);
+    }
+    const { bookingId } = validated.data;
+    // @ts-expect-error – added by auth middleware
+    const userId = req.user.id;
+
+    const result = await this.cancelBookingUC.execute({ userId, bookingId });
+    res.status(HTTP_STATUS.OK).json({
+      message: BOOKING_MESSAGES.BOOKING_CANCELLED,
+      data: result,
+    });
   };
 }

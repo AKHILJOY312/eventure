@@ -65,3 +65,18 @@ export interface PaginatedBookingsDTO {
   limit: number;
   totalPages: number;
 }
+
+export interface UserCancelDto {
+  userId: string;
+  bookingId: string;
+}
+export interface UserCancelResponse {
+  id: string;
+  userId: string;
+  serviceId: string;
+  dates: Date[];
+  totalPrice: number;
+  status: BookingStatus;
+  createdAt?: Date;
+  updatedAt?: Date;
+}

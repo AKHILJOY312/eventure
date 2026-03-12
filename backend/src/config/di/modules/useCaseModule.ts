@@ -26,6 +26,7 @@ import { GetServiceBookings } from "@/application/use-cases/admin/GetServiceBook
 import { UpdateService } from "@/application/use-cases/admin/UpdateService";
 import {
   ICalculateBookingPrice,
+  ICancelBooking,
   ICreateBooking,
   IGetUserBookingHistory,
 } from "@/application/ports/use-cases/booking/IBookingUseCase";
@@ -42,6 +43,7 @@ import { GetServiceDetails } from "@/application/use-cases/discovery/GetServiceD
 import { SearchServices } from "@/application/use-cases/discovery/SearchServices";
 import { ListServices } from "@/application/use-cases/admin/LIstAllService";
 import { UpdateBookingStatus } from "@/application/use-cases/admin/UpdateBookingStatus";
+import { CancelBooking } from "@/application/use-cases/booking/CancelBooking";
 
 export const useCaseModule = new ContainerModule((options) => {
   // Regular Auth Use Cases
@@ -71,6 +73,7 @@ export const useCaseModule = new ContainerModule((options) => {
   options
     .bind<IGetUserBookingHistory>(TYPES.GetUserBookingHistory)
     .to(GetUserBookingHistory);
+  options.bind<ICancelBooking>(TYPES.CancelBooking).to(CancelBooking);
 
   //Discovery
   options

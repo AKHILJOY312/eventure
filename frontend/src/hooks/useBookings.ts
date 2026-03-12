@@ -8,6 +8,7 @@ import type {
 import {
   createBooking,
   getMyBookings,
+  cancelBooking,
   // calculateBookingPrice,
 } from "@/services/booking.service";
 
@@ -16,6 +17,7 @@ export function useBookings(query?: BookingQueryParams) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
 
@@ -50,6 +52,20 @@ export function useBookings(query?: BookingQueryParams) {
     }
   };
 
+  const cancelBookingById = async (bookingId: string) => {
+    try {
+      setCancellingId(bookingId);
+      await cancelBooking({ bookingId });
+      await fetchBookings();
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to cancel booking";
+      setError(message);
+    } finally {
+      setCancellingId(null);
+    }
+  };
+
   // const getPrice = async (data: CreateBookingInput) => {
   //   const res = await calculateBookingPrice(data);
   //   return res.data.data;
@@ -64,6 +80,8 @@ export function useBookings(query?: BookingQueryParams) {
     total,
     refetch: fetchBookings,
     addBooking,
+    cancelBooking: cancelBookingById,
+    cancellingId,
     // getPrice,
   };
 }

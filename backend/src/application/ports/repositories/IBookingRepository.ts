@@ -49,4 +49,6 @@ export interface IBookingRepository {
     serviceId: string;
     status: BookingStatus;
   }): Promise<boolean>;
+
+  // cancelBooking(userId: string): Promise<Booking>;
 }

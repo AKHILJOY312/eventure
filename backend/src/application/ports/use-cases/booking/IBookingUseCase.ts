@@ -7,6 +7,8 @@ import {
   CreateBookingDto,
   GetUserBookingHistoryDto,
   PaginatedBookingsDTO,
+  UserCancelDto,
+  UserCancelResponse,
 } from "@/application/dto/booking.dtos";
 
 export interface ICalculateBookingPrice {
@@ -21,4 +23,8 @@ export interface ICreateBooking {
 
 export interface IGetUserBookingHistory {
   execute(dto: GetUserBookingHistoryDto): Promise<PaginatedBookingsDTO>;
+}
+
+export interface ICancelBooking {
+  execute(dto: UserCancelDto): Promise<UserCancelResponse>;
 }

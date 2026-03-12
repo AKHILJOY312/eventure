@@ -29,3 +29,9 @@ logs/
 # Optional: if you don't want to commit package-lock files
 # package-lock.json
 gitAuto.sh
+AGENTS.md
+local.sh
+pro.md
+production.sh
+test.md
+trash.md
