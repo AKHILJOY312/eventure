@@ -14,6 +14,9 @@ export const createBookingSchema = z
           .pipe(z.coerce.date()),
       )
       .min(1, "At least one date is required")
+      .refine((dates) => new Set(dates.map((d) => d.getTime())).size === dates.length, {
+        message: "Dates must be unique",
+      })
       .refine(
         (dates) => {
           const today = new Date();
@@ -25,6 +28,7 @@ export const createBookingSchema = z
         },
       ),
   })
+  .strict()
   .transform((data) => ({
     ...data,
     dates: data.dates.sort((a, b) => a.getTime() - b.getTime()),

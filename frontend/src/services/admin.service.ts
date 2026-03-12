@@ -11,7 +11,7 @@ export const createService = (data: {
   pricePerDay: number;
   description?: string;
   location: string;
-  contactDetails?: string;
+  contactDetails: string;
   imageUrl?: string;
   availableDates?: string[];
 }) => {

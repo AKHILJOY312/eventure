@@ -29,7 +29,7 @@ function DiscoverPage() {
   } = useDiscover();
 
   const [page, setPage] = useState(1);
-  const [bookingDate, setBookingDate] = useState(dayjs().format("YYYY-MM-DD"));
+  const [bookingDates, setBookingDates] = useState<string[]>([]);
   const [filters, setFilters] = useState({
     keyword: "",
     category: "",
@@ -53,15 +53,21 @@ function DiscoverPage() {
     fetchServices();
   }, [page]);
 
+  useEffect(() => {
+    setBookingDates([]);
+  }, [selectedService?.id]);
+
   const handleBook = async () => {
     if (!selectedService) return;
 
-    const formattedDate = dayjs(bookingDate).format("YYYY-MM-DD");
+    const uniqueDates = Array.from(
+      new Set(bookingDates.map((date) => dayjs(date).format("YYYY-MM-DD"))),
+    ).sort();
 
     try {
       await addBooking({
         serviceId: selectedService.id,
-        dates: [formattedDate],
+        dates: uniqueDates,
       });
 
       triggerAlert("Booking successful!", "success");
@@ -120,8 +126,8 @@ function DiscoverPage() {
       <BookingModal
         open={!!selectedService}
         service={selectedService}
-        bookingDate={bookingDate}
-        setBookingDate={setBookingDate}
+        bookingDates={bookingDates}
+        setBookingDates={setBookingDates}
         onClose={() => setSelectedService(null)}
         onConfirm={handleBook}
         loading={creating}

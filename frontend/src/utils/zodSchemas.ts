@@ -40,7 +40,11 @@ export const createServiceFormSchema = z.object({
   pricePerDay: z.number().positive("Price per day must be greater than 0"),
   location: z.string().trim().min(2, "Location must be at least 2 characters"),
   description: z.string().max(1000, "Description is too long").optional(),
-  contactDetails: z.string().max(300, "Contact details are too long").optional(),
+  contactDetails: z
+    .string()
+    .trim()
+    .min(5, "Contact details must be at least 5 characters")
+    .max(300, "Contact details are too long"),
   imageUrl: z
     .string()
     .url("Image URL must be valid")
