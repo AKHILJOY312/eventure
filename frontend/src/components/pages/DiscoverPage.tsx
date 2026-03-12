@@ -5,6 +5,7 @@ import {
   Stack,
   CircularProgress,
   Divider,
+  Button,
 } from "@mui/material";
 import { COLORS } from "@/styles/theme";
 import dayjs from "dayjs";
@@ -35,7 +36,10 @@ function DiscoverPage() {
     category: "",
     location: "",
     date: "",
+    minPrice: "",
+    maxPrice: "",
   });
+  const [showFilters, setShowFilters] = useState(false);
   const { triggerAlert } = useUi();
   const { addBooking, creating } = useBookings();
 
@@ -45,6 +49,8 @@ function DiscoverPage() {
     if (filters.location) searchParams.location = filters.location;
     if (filters.date) searchParams.date = filters.date;
     if (filters.category) searchParams.category = filters.category;
+    if (filters.minPrice !== "") searchParams.minPrice = Number(filters.minPrice);
+    if (filters.maxPrice !== "") searchParams.maxPrice = Number(filters.maxPrice);
 
     await search(searchParams);
   };
@@ -88,21 +94,42 @@ function DiscoverPage() {
         Discover Services
       </Typography>
 
-      <DiscoverFilters
-        filters={filters}
-        setFilter={(k, v) => setFilters((p) => ({ ...p, [k]: v }))}
-        onApply={() => {
-          setPage(1);
-          fetchServices(1);
-        }}
-        onReset={() => {
-          setFilters({ keyword: "", category: "", location: "", date: "" });
-          setPage(1);
-          fetchServices(1);
-        }}
-      />
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+        <Button
+          variant="outlined"
+          onClick={() => setShowFilters((prev) => !prev)}
+          sx={{ borderColor: COLORS.border, color: COLORS.primaryUI }}
+        >
+          {showFilters ? "Hide Filters" : "Show Filters"}
+        </Button>
+      </Box>
 
-      <Divider sx={{ mb: 3 }} />
+      {showFilters && (
+        <>
+          <DiscoverFilters
+            filters={filters}
+            setFilter={(k, v) => setFilters((p) => ({ ...p, [k]: v }))}
+            onApply={() => {
+              setPage(1);
+              fetchServices(1);
+            }}
+            onReset={() => {
+              setFilters({
+                keyword: "",
+                category: "",
+                location: "",
+                date: "",
+                minPrice: "",
+                maxPrice: "",
+              });
+              setPage(1);
+              fetchServices(1);
+            }}
+          />
+
+          <Divider sx={{ mb: 3 }} />
+        </>
+      )}
 
       {loading ? (
         <CircularProgress sx={{ display: "block", mx: "auto", my: 4 }} />

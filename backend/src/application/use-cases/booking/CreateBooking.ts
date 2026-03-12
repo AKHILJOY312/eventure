@@ -57,9 +57,7 @@ export class CreateBooking implements ICreateBooking {
         .filter((key) => !availableKeys.has(key));
 
       if (invalidDates.length > 0) {
-        throw new BadRequestError(
-          "SELECTED_DATES_NOT_AVAILABLE_FOR_SERVICE",
-        );
+        throw new BadRequestError("SELECTED_DATES_NOT_AVAILABLE_FOR_SERVICE");
       }
     }
 
@@ -82,11 +80,6 @@ export class CreateBooking implements ICreateBooking {
       totalPrice: sortedDates.length * service.pricePerDay,
       status: BookingStatus.Pending,
     });
-
-    // Alternative: if you want to keep createNew(start, end) factory → compute start/end
-    // const start = sortedDates[0];
-    // const end = sortedDates[sortedDates.length - 1];
-    // const booking = Booking.createNew(dto.userId, dto.serviceId, start, end, service.pricePerDay);
 
     const saved = await this._bookingRepo.create(booking);
 

@@ -69,6 +69,26 @@ export function DiscoverFilters({
             fullWidth
           />
         </Grid>
+        <Grid size={{ xs: 6, md: 2 }}>
+          <TextField
+            label="Min Price (INR)"
+            type="number"
+            value={filters.minPrice}
+            onChange={(e) => setFilter("minPrice", e.target.value)}
+            fullWidth
+            inputProps={{ min: 0 }}
+          />
+        </Grid>
+        <Grid size={{ xs: 6, md: 2 }}>
+          <TextField
+            label="Max Price (INR)"
+            type="number"
+            value={filters.maxPrice}
+            onChange={(e) => setFilter("maxPrice", e.target.value)}
+            fullWidth
+            inputProps={{ min: 0 }}
+          />
+        </Grid>
         <Grid
           size={{ xs: 12, md: 2.5 }}
           sx={{ display: "flex", alignItems: "center", gap: 1 }}
