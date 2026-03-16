@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+﻿import dayjs from "dayjs";
 import type { Service } from "@/types/discover.types";
 import {
   Dialog,
@@ -18,8 +18,8 @@ interface Props {
   service: Service | null;
   open: boolean;
   onClose: () => void;
-  bookingDate: string;
-  setBookingDate: (date: string) => void;
+  bookingDates: string[];
+  setBookingDates: (dates: string[]) => void;
   onConfirm: () => void;
   loading: boolean;
 }
@@ -28,8 +28,8 @@ export function BookingModal({
   service,
   open,
   onClose,
-  bookingDate,
-  setBookingDate,
+  bookingDates,
+  setBookingDates,
   onConfirm,
   loading,
 }: Props) {
@@ -41,7 +41,17 @@ export function BookingModal({
     .filter((d) => d >= today)
     .sort();
 
-  const isInvalid = !bookingDate;
+  const selectedCount = bookingDates.length;
+  const totalPrice = selectedCount * service.pricePerDay;
+  const isInvalid = selectedCount === 0;
+
+  const toggleDate = (date: string) => {
+    if (bookingDates.includes(date)) {
+      setBookingDates(bookingDates.filter((d) => d !== date));
+      return;
+    }
+    setBookingDates([...bookingDates, date]);
+  };
 
   return (
     <Dialog
@@ -85,15 +95,15 @@ export function BookingModal({
         {/* Metadata */}
         <Box>
           <Typography sx={{ color: COLORS.primaryUI }}>
-            📍 {service.location}
+            Location: {service.location}
           </Typography>
 
           <Typography sx={{ color: COLORS.primaryUI }}>
-            ⭐ {service.rating ?? "No ratings yet"}
+            Rating: {service.rating ?? "No ratings yet"}
           </Typography>
 
           <Typography sx={{ color: COLORS.primaryUI }}>
-            📞 {service.contactDetails}
+            Contact: {service.contactDetails}
           </Typography>
         </Box>
 
@@ -107,7 +117,7 @@ export function BookingModal({
             fontWeight: 600,
           }}
         >
-          Select an Available Date
+          Select Available Dates
         </Typography>
 
         <Stack direction="row" spacing={1} flexWrap="wrap">
@@ -118,13 +128,13 @@ export function BookingModal({
           )}
 
           {availableFutureDates.map((date) => {
-            const isSelected = bookingDate === date;
+            const isSelected = bookingDates.includes(date);
 
             return (
               <Chip
                 key={date}
                 label={dayjs(date).format("DD MMM")}
-                onClick={() => setBookingDate(date)}
+                onClick={() => toggleDate(date)}
                 sx={{
                   fontFamily: MONO_FONT,
                   backgroundColor: isSelected ? COLORS.accent : COLORS.mainBg,
@@ -140,6 +150,64 @@ export function BookingModal({
           })}
         </Stack>
 
+        {selectedCount > 0 && (
+          <>
+            <Divider sx={{ borderColor: COLORS.border }} />
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 2,
+              }}
+            >
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  color: COLORS.primaryUI,
+                  fontWeight: 600,
+                }}
+              >
+                Selected Dates
+              </Typography>
+
+              <Button
+                size="small"
+                onClick={() => setBookingDates([])}
+                sx={{
+                  color: COLORS.primaryUI,
+                  border: `1px solid ${COLORS.border}`,
+                  textTransform: "none",
+                }}
+              >
+                Clear Selection
+              </Button>
+            </Box>
+
+            <Stack direction="row" spacing={1} flexWrap="wrap">
+              {bookingDates
+                .slice()
+                .sort()
+                .map((date) => (
+                  <Chip
+                    key={`selected-${date}`}
+                    label={dayjs(date).format("DD MMM")}
+                    onDelete={() =>
+                      setBookingDates(bookingDates.filter((d) => d !== date))
+                    }
+                    sx={{
+                      fontFamily: MONO_FONT,
+                      backgroundColor: COLORS.mainBg,
+                      color: COLORS.primaryUI,
+                      border: `1px solid ${COLORS.border}`,
+                    }}
+                  />
+                ))}
+            </Stack>
+          </>
+        )}
+
         <Divider sx={{ borderColor: COLORS.border }} />
 
         {/* Price Box */}
@@ -152,7 +220,10 @@ export function BookingModal({
           }}
         >
           <Typography variant="subtitle2" sx={{ color: COLORS.primaryUI }}>
-            Price Per Day
+            Total Price
+            {selectedCount > 0
+              ? ` (${selectedCount} day${selectedCount > 1 ? "s" : ""})`
+              : ""}
           </Typography>
 
           <Typography
@@ -163,7 +234,14 @@ export function BookingModal({
               fontFamily: MONO_FONT,
             }}
           >
-            ₹{service.pricePerDay.toLocaleString()}
+            ₹{totalPrice.toLocaleString()}
+          </Typography>
+
+          <Typography
+            variant="caption"
+            sx={{ color: COLORS.primaryUI, opacity: 0.7 }}
+          >
+            Price per day: ₹{service.pricePerDay.toLocaleString()}
           </Typography>
         </Box>
       </DialogContent>

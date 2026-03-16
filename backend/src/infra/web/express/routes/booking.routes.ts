@@ -25,5 +25,9 @@ export function getBookingRoutes(container: Container): Router {
     .route("/price/calculate")
     .get(asyncHandler(bookingController.calculatePrice));
 
+  router
+    .route("/cancel")
+    .patch(asyncHandler(bookingController.cancelBooking));
+
   return router;
 }

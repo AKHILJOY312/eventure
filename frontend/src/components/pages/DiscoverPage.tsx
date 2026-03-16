@@ -5,6 +5,7 @@ import {
   Stack,
   CircularProgress,
   Divider,
+  Button,
 } from "@mui/material";
 import { COLORS } from "@/styles/theme";
 import dayjs from "dayjs";
@@ -29,13 +30,16 @@ function DiscoverPage() {
   } = useDiscover();
 
   const [page, setPage] = useState(1);
-  const [bookingDate, setBookingDate] = useState(dayjs().format("YYYY-MM-DD"));
+  const [bookingDates, setBookingDates] = useState<string[]>([]);
   const [filters, setFilters] = useState({
     keyword: "",
     category: "",
     location: "",
     date: "",
+    minPrice: "",
+    maxPrice: "",
   });
+  const [showFilters, setShowFilters] = useState(false);
   const { triggerAlert } = useUi();
   const { addBooking, creating } = useBookings();
 
@@ -45,6 +49,8 @@ function DiscoverPage() {
     if (filters.location) searchParams.location = filters.location;
     if (filters.date) searchParams.date = filters.date;
     if (filters.category) searchParams.category = filters.category;
+    if (filters.minPrice !== "") searchParams.minPrice = Number(filters.minPrice);
+    if (filters.maxPrice !== "") searchParams.maxPrice = Number(filters.maxPrice);
 
     await search(searchParams);
   };
@@ -53,15 +59,21 @@ function DiscoverPage() {
     fetchServices();
   }, [page]);
 
+  useEffect(() => {
+    setBookingDates([]);
+  }, [selectedService?.id]);
+
   const handleBook = async () => {
     if (!selectedService) return;
 
-    const formattedDate = dayjs(bookingDate).format("YYYY-MM-DD");
+    const uniqueDates = Array.from(
+      new Set(bookingDates.map((date) => dayjs(date).format("YYYY-MM-DD"))),
+    ).sort();
 
     try {
       await addBooking({
         serviceId: selectedService.id,
-        dates: [formattedDate],
+        dates: uniqueDates,
       });
 
       triggerAlert("Booking successful!", "success");
@@ -82,21 +94,42 @@ function DiscoverPage() {
         Discover Services
       </Typography>
 
-      <DiscoverFilters
-        filters={filters}
-        setFilter={(k, v) => setFilters((p) => ({ ...p, [k]: v }))}
-        onApply={() => {
-          setPage(1);
-          fetchServices(1);
-        }}
-        onReset={() => {
-          setFilters({ keyword: "", category: "", location: "", date: "" });
-          setPage(1);
-          fetchServices(1);
-        }}
-      />
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+        <Button
+          variant="outlined"
+          onClick={() => setShowFilters((prev) => !prev)}
+          sx={{ borderColor: COLORS.border, color: COLORS.primaryUI }}
+        >
+          {showFilters ? "Hide Filters" : "Show Filters"}
+        </Button>
+      </Box>
 
-      <Divider sx={{ mb: 3 }} />
+      {showFilters && (
+        <>
+          <DiscoverFilters
+            filters={filters}
+            setFilter={(k, v) => setFilters((p) => ({ ...p, [k]: v }))}
+            onApply={() => {
+              setPage(1);
+              fetchServices(1);
+            }}
+            onReset={() => {
+              setFilters({
+                keyword: "",
+                category: "",
+                location: "",
+                date: "",
+                minPrice: "",
+                maxPrice: "",
+              });
+              setPage(1);
+              fetchServices(1);
+            }}
+          />
+
+          <Divider sx={{ mb: 3 }} />
+        </>
+      )}
 
       {loading ? (
         <CircularProgress sx={{ display: "block", mx: "auto", my: 4 }} />
@@ -120,8 +153,8 @@ function DiscoverPage() {
       <BookingModal
         open={!!selectedService}
         service={selectedService}
-        bookingDate={bookingDate}
-        setBookingDate={setBookingDate}
+        bookingDates={bookingDates}
+        setBookingDates={setBookingDates}
         onClose={() => setSelectedService(null)}
         onConfirm={handleBook}
         loading={creating}

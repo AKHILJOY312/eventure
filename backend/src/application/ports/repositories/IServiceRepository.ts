@@ -28,6 +28,7 @@ export interface IServiceRepository {
     location?: string;
     minPrice?: number;
     maxPrice?: number;
+    date?: Date;
     skip: number;
     limit: number;
   }): Promise<{ services: Service[]; total: number }>;

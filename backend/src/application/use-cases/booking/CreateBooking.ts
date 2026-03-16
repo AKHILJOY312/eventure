@@ -34,21 +34,30 @@ export class CreateBooking implements ICreateBooking {
       return d;
     });
 
-    // Basic validation: at least one date, sorted & consecutive
+    // Basic validation: at least one date
     if (proposedDates.length === 0) {
       throw new BadRequestError("At least one date is required");
     }
 
-    // Optional: enforce sorted & consecutive (you can also rely on entity constructor)
     const sortedDates = [...proposedDates].sort(
       (a, b) => a.getTime() - b.getTime(),
     );
-    for (let i = 1; i < sortedDates.length; i++) {
-      const diffDays =
-        (sortedDates[i].getTime() - sortedDates[i - 1].getTime()) /
-        (1000 * 60 * 60 * 24);
-      if (Math.round(diffDays) !== 1) {
-        throw new BadRequestError("Dates must be consecutive without gaps");
+
+    const toDateKey = (date: Date) => {
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    };
+
+    if (service.availableDates.length > 0) {
+      const availableKeys = new Set(service.availableDates.map(toDateKey));
+      const invalidDates = sortedDates
+        .map(toDateKey)
+        .filter((key) => !availableKeys.has(key));
+
+      if (invalidDates.length > 0) {
+        throw new BadRequestError("SELECTED_DATES_NOT_AVAILABLE_FOR_SERVICE");
       }
     }
 
@@ -71,11 +80,6 @@ export class CreateBooking implements ICreateBooking {
       totalPrice: sortedDates.length * service.pricePerDay,
       status: BookingStatus.Pending,
     });
-
-    // Alternative: if you want to keep createNew(start, end) factory → compute start/end
-    // const start = sortedDates[0];
-    // const end = sortedDates[sortedDates.length - 1];
-    // const booking = Booking.createNew(dto.userId, dto.serviceId, start, end, service.pricePerDay);
 
     const saved = await this._bookingRepo.create(booking);
 

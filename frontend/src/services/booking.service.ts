@@ -35,3 +35,11 @@ export const calculateBookingPrice = (params: {
 }) => {
   return api.get("/bookings/price/calculate", { params });
 };
+
+/* =========================
+   Cancel Booking
+========================= */
+
+export const cancelBooking = (data: { bookingId: string }) => {
+  return api.patch("/bookings/cancel", data);
+};

@@ -67,6 +67,23 @@ export class NodemailerEmailService implements IEmailService {
     `;
   }
 
+  private cancelTemplate(email: string, name?: string): string {
+    return `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background: #f9f9f9;">
+        <h2 style="color: #1a73e8; text-align: center;">Verify Your Account</h2>
+        <p style="text-align: center; font-size: 16px; color: #555;">
+          Your have canceled the booking , ${name || "there"} :
+        </p>
+       
+      
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="text-align: center; font-size: 12px; color: #aaa;">
+          &copy; ${new Date().getFullYear()} Pixel_Tasks Task Management. All rights reserved.
+        </p>
+      </div>
+    `;
+  }
+
   private getBookingConfirmationTemplate(params: {
     name?: string;
     bookingId: string;
@@ -150,7 +167,12 @@ export class NodemailerEmailService implements IEmailService {
 
     try {
       const info = await this.transporter.sendMail(mailOptions);
-      console.log("Booking confirmation email sent:", info.messageId, "to:", params.email);
+      console.log(
+        "Booking confirmation email sent:",
+        info.messageId,
+        "to:",
+        params.email,
+      );
     } catch (error: unknown) {
       const err = error as Error;
       console.error("Failed to send booking confirmation email:", {
@@ -160,5 +182,25 @@ export class NodemailerEmailService implements IEmailService {
       throw new Error("BOOKING_CONFIRMATION_EMAIL_FAILED");
     }
   }
-}
 
+  async sendCancelMessage(email: string, name?: string): Promise<void> {
+    const mailOptions: SendMailOptions = {
+      from: `"Pixel_Tasks Team" <${this.fromEmail}>`,
+      to: email,
+      subject: `Cancel request`,
+      html: this.cancelTemplate(email, name),
+    };
+
+    try {
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log("OTP Email sent:", info.messageId, "to:", email);
+    } catch (error: unknown) {
+      const err = error as Error;
+      console.error("Failed to send OTP email:", {
+        to: email,
+        message: err.message,
+      });
+      throw new Error("EMAIL_DELIVERY_FAILED");
+    }
+  }
+}

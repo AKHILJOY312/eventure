@@ -65,7 +65,7 @@ function CreateServiceModal({
           title: values.title.trim(),
           location: values.location.trim(),
           description: values.description?.trim() || "",
-          contactDetails: values.contactDetails?.trim() || "",
+          contactDetails: values.contactDetails.trim(),
           imageUrl: values.imageUrl?.trim() || "",
         });
         helpers.resetForm();
@@ -160,6 +160,18 @@ function CreateServiceModal({
               onBlur={formik.handleBlur}
               error={hasFieldError("location")}
               helperText={fieldError("location") || " "}
+              fullWidth
+              required
+            />
+
+            <TextField
+              label="Contact Details"
+              name="contactDetails"
+              value={formik.values.contactDetails}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={hasFieldError("contactDetails")}
+              helperText={fieldError("contactDetails") || " "}
               fullWidth
               required
             />

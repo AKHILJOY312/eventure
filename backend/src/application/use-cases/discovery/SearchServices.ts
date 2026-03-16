@@ -33,12 +33,18 @@ export class SearchServices implements ISearchServices {
 
     const skip = (page - 1) * limit;
 
+    const normalizedDate =
+      dto.date !== undefined
+        ? new Date(dto.date.setHours(0, 0, 0, 0))
+        : undefined;
+
     const { services, total } = await this._serviceRepo.searchPaginated({
       keyword: dto.keyword,
       category: dto.category,
       location: dto.location,
       minPrice: dto.minPrice,
       maxPrice: dto.maxPrice,
+      date: normalizedDate,
       skip,
       limit,
     });

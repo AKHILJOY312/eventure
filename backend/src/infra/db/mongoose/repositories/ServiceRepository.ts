@@ -148,10 +148,15 @@ export class ServiceRepository implements IServiceRepository {
     skip: number;
     limit: number;
   }): Promise<{ services: Service[]; total: number }> {
+    const start = new Date(params.date);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 1);
+
     const filter: FilterQuery<ServiceDoc> = {
       isDeleted: { $ne: true },
-      availableDates: params.date,
-      bookedDates: { $ne: params.date },
+      availableDates: { $elemMatch: { $gte: start, $lt: end } },
+      bookedDates: { $not: { $elemMatch: { $gte: start, $lt: end } } },
     };
     if (params.category) {
       filter.category = params.category;
@@ -180,6 +185,7 @@ export class ServiceRepository implements IServiceRepository {
     location?: string;
     minPrice?: number;
     maxPrice?: number;
+    date?: Date;
     skip: number;
     limit: number;
   }): Promise<{ services: Service[]; total: number }> {
@@ -188,7 +194,19 @@ export class ServiceRepository implements IServiceRepository {
     };
 
     if (params.keyword) {
-      filter.$text = { $search: params.keyword };
+      const terms = params.keyword
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+      if (terms.length > 0) {
+        const escapeRegex = (value: string) =>
+          value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const pattern = `\\b(?:${terms.map(escapeRegex).join("|")})`;
+        filter.$or = [
+          { title: { $regex: pattern, $options: "i" } },
+        ];
+      }
     }
 
     if (params.category) {
@@ -197,6 +215,16 @@ export class ServiceRepository implements IServiceRepository {
 
     if (params.location) {
       filter.location = { $regex: params.location, $options: "i" };
+    }
+
+    if (params.date) {
+      const start = new Date(params.date);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 1);
+
+      filter.availableDates = { $elemMatch: { $gte: start, $lt: end } };
+      filter.bookedDates = { $not: { $elemMatch: { $gte: start, $lt: end } } };
     }
 
     if (params.minPrice !== undefined || params.maxPrice !== undefined) {
@@ -211,11 +239,7 @@ export class ServiceRepository implements IServiceRepository {
 
     const [docs, total] = await Promise.all([
       ServiceModel.find(filter)
-        .sort(
-          params.keyword
-            ? { score: { $meta: "textScore" } }
-            : { createdAt: -1 },
-        )
+        .sort({ createdAt: -1 })
         .skip(params.skip)
         .limit(params.limit),
       ServiceModel.countDocuments(filter),
