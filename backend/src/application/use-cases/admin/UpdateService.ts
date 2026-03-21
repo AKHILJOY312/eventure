@@ -8,7 +8,8 @@ import {
 import { IServiceRepository } from "@/application/ports/repositories/IServiceRepository";
 import { NotFoundError } from "@/application/error/AppError";
 import { IUpdateService } from "@/application/ports/use-cases/admin/IAdminUseCase";
-import { Service } from "@/entities/Service";
+// import { Service } from "@/entities/Service";
+import { toAdminServiceResponseDTO } from "@/application/mappers/admin.service.mapper";
 
 @injectable()
 export class UpdateService implements IUpdateService {
@@ -60,24 +61,24 @@ export class UpdateService implements IUpdateService {
 
     await this._serviceRepo.update(service);
 
-    return this.toResponseDTO(service);
+    return toAdminServiceResponseDTO(service);
   }
 
-  private toResponseDTO(service: Service): ServiceResponseDTO {
-    return {
-      id: service.id!,
-      title: service.title,
-      category: service.category,
-      pricePerDay: service.pricePerDay,
-      description: service.description,
-      location: service.location,
-      contactDetails: service.contactDetails,
-      imageUrl: service.imageUrl,
-      adminId: service.adminId,
-      availableDates: service.availableDates,
-      bookedDates: service.bookedDates,
-      createdAt: service.createdAt,
-      updatedAt: service.updatedAt,
-    };
-  }
+  // private toResponseDTO(service: Service): ServiceResponseDTO {
+  //   return {
+  //     id: service.id!,
+  //     title: service.title,
+  //     category: service.category,
+  //     pricePerDay: service.pricePerDay,
+  //     description: service.description,
+  //     location: service.location,
+  //     contactDetails: service.contactDetails,
+  //     imageUrl: service.imageUrl,
+  //     adminId: service.adminId,
+  //     availableDates: service.availableDates,
+  //     bookedDates: service.bookedDates,
+  //     createdAt: service.createdAt,
+  //     updatedAt: service.updatedAt,
+  //   };
+  // }
 }

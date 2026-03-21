@@ -7,7 +7,7 @@ import { IServiceRepository } from "@/application/ports/repositories/IServiceRep
 import { IFilterServicesByAvailability } from "@/application/ports/use-cases/discover/IDiscoverUseCase";
 import { TYPES } from "@/config/di/types";
 import { inject, injectable } from "inversify";
-import { toServiceResponseDTO } from "@/application/mappers/service.mapper";
+import { toServiceResponseDTO } from "@/application/mappers/user.service.mapper";
 
 @injectable()
 export class FilterServicesByAvailability implements IFilterServicesByAvailability {

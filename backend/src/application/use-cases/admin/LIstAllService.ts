@@ -5,10 +5,11 @@ import { TYPES } from "@/config/di/types";
 import { IServiceRepository } from "@/application/ports/repositories/IServiceRepository";
 import { IListAllServices } from "@/application/ports/use-cases/admin/IAdminUseCase";
 import {
-  ServiceResponseDTO,
+  // ServiceResponseDTO,
   PaginatedServicesDTO,
 } from "@/application/dto/admin.dtos";
-import { Service } from "@/entities/Service";
+// import { Service } from "@/entities/Service";
+import { toAdminServiceResponseDTO } from "@/application/mappers/admin.service.mapper";
 
 @injectable()
 export class ListServices implements IListAllServices {
@@ -38,7 +39,7 @@ export class ListServices implements IListAllServices {
     const totalPages = Math.ceil(total / limit);
 
     return {
-      data: paginated.map((s) => this.toResponseDTO(s)),
+      data: paginated.map((s) => toAdminServiceResponseDTO(s)),
       total,
       page,
       limit,
@@ -46,21 +47,21 @@ export class ListServices implements IListAllServices {
     };
   }
 
-  private toResponseDTO(s: Service): ServiceResponseDTO {
-    return {
-      id: s.id!,
-      title: s.title,
-      category: s.category,
-      pricePerDay: s.pricePerDay,
-      description: s.description,
-      location: s.location,
-      contactDetails: s.contactDetails,
-      imageUrl: s.imageUrl,
-      adminId: s.adminId,
-      availableDates: s.availableDates,
-      bookedDates: s.bookedDates,
-      createdAt: s.createdAt,
-      updatedAt: s.updatedAt,
-    };
-  }
+  // private toResponseDTO(s: Service): ServiceResponseDTO {
+  //   return {
+  //     id: s.id!,
+  //     title: s.title,
+  //     category: s.category,
+  //     pricePerDay: s.pricePerDay,
+  //     description: s.description,
+  //     location: s.location,
+  //     contactDetails: s.contactDetails,
+  //     imageUrl: s.imageUrl,
+  //     adminId: s.adminId,
+  //     availableDates: s.availableDates,
+  //     bookedDates: s.bookedDates,
+  //     createdAt: s.createdAt,
+  //     updatedAt: s.updatedAt,
+  //   };
+  // }
 }

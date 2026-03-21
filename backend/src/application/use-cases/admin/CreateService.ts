@@ -10,6 +10,7 @@ import { IServiceRepository } from "@/application/ports/repositories/IServiceRep
 import { Service } from "@/entities/Service";
 import { BadRequestError } from "@/application/error/AppError";
 import { ICreateService } from "@/application/ports/use-cases/admin/IAdminUseCase";
+import { toAdminServiceResponseDTO } from "@/application/mappers/admin.service.mapper";
 
 @injectable()
 export class CreateService implements ICreateService {
@@ -40,24 +41,24 @@ export class CreateService implements ICreateService {
 
     const created = await this._serviceRepo.create(service);
 
-    return this.toResponseDTO(created);
+    return toAdminServiceResponseDTO(created);
   }
 
-  private toResponseDTO(s: Service): ServiceResponseDTO {
-    return {
-      id: s.id!,
-      title: s.title,
-      category: s.category,
-      pricePerDay: s.pricePerDay,
-      description: s.description,
-      location: s.location,
-      contactDetails: s.contactDetails,
-      imageUrl: s.imageUrl,
-      adminId: s.adminId,
-      availableDates: s.availableDates,
-      bookedDates: s.bookedDates,
-      createdAt: s.createdAt,
-      updatedAt: s.updatedAt,
-    };
-  }
+  // private toResponseDTO(s: Service): ServiceResponseDTO {
+  //   return {
+  //     id: s.id!,
+  //     title: s.title,
+  //     category: s.category,
+  //     pricePerDay: s.pricePerDay,
+  //     description: s.description,
+  //     location: s.location,
+  //     contactDetails: s.contactDetails,
+  //     imageUrl: s.imageUrl,
+  //     adminId: s.adminId,
+  //     availableDates: s.availableDates,
+  //     bookedDates: s.bookedDates,
+  //     createdAt: s.createdAt,
+  //     updatedAt: s.updatedAt,
+  //   };
+  // }
 }
