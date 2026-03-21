@@ -3,6 +3,7 @@ import { Container } from "inversify";
 import { TYPES } from "@/config/di/types";
 import { DiscoverController } from "@/interface-adapters/controllers/DiscoverController";
 import { asyncHandler } from "../handler/asyncHandler";
+import { DiscoverRoutes } from "@/config/routes.config";
 
 export function getDiscoverRoutes(container: Container): Router {
   const router = Router();
@@ -11,14 +12,14 @@ export function getDiscoverRoutes(container: Container): Router {
     TYPES.DiscoverController,
   );
 
-  router.route("/services").get(asyncHandler(controller.search));
+  router.route(DiscoverRoutes.SERVICES).get(asyncHandler(controller.search));
 
   router
-    .route("/services/availability")
+    .route(DiscoverRoutes.AVAILABILITY)
     .get(asyncHandler(controller.filterByAvailability));
 
   router
-    .route("/services/:serviceId")
+    .route(DiscoverRoutes.SERVICE_DETAILS)
     .get(asyncHandler(controller.getServiceDetails));
 
   return router;

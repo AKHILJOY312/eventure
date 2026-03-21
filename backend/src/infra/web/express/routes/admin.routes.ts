@@ -7,6 +7,7 @@ import { createProtectMiddleware } from "../middleware/authentication";
 
 import { UserRole } from "@/entities/User";
 import { requireRole } from "../middleware/authorization";
+import { AdminRoutes } from "@/config/routes.config";
 
 export function getAdminRoutes(container: Container): Router {
   const router = Router();
@@ -20,21 +21,21 @@ export function getAdminRoutes(container: Container): Router {
   router.use(requireRole(UserRole.ADMIN));
 
   router
-    .route("/services")
+    .route(AdminRoutes.SERVICES)
     .post(asyncHandler(adminController.createService))
     .get(asyncHandler(adminController.listAdminServices));
 
   router
-    .route("/services/:serviceId")
+    .route(AdminRoutes.SERVICE_BY_ID)
     .patch(asyncHandler(adminController.updateService))
     .delete(asyncHandler(adminController.deleteService));
 
   router
-    .route("/services/:serviceId/bookings")
+    .route(AdminRoutes.SERVICE_BOOKINGS)
     .get(asyncHandler(adminController.getServiceBookings));
 
   router
-    .route("/services/:serviceId/bookings/:bookingId/status")
+    .route(AdminRoutes.UPDATE_BOOKING_STATUS)
     .patch(asyncHandler(adminController.updateBookingStatus));
   return router;
 }

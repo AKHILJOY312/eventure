@@ -4,6 +4,7 @@ import { TYPES } from "@/config/di/types";
 import { AuthController } from "@/interface-adapters/controllers/AuthController";
 import { asyncHandler } from "../handler/asyncHandler";
 import { createProtectMiddleware } from "../middleware/authentication";
+import { AuthRoutes } from "@/config/routes.config";
 
 export function getAuthRoutes(container: Container): Router {
   const router = Router();
@@ -16,22 +17,22 @@ export function getAuthRoutes(container: Container): Router {
 
   // -------- Users --------
 
-  router.route("/users").post(asyncHandler(authController.register)); // create user
+  router.route(AuthRoutes.USERS).post(asyncHandler(authController.register));
 
   router
-    .route("/users/verify-email")
-    .patch(asyncHandler(authController.verifyEmail)); // update verification state
+    .route(AuthRoutes.VERIFY_EMAIL)
+    .patch(asyncHandler(authController.verifyEmail));
 
-  router.route("/users/me").get(protect, asyncHandler(authController.me)); // current user
+  router.route(AuthRoutes.ME).get(protect, asyncHandler(authController.me));
 
   // -------- Sessions --------
 
-  router.route("/sessions").post(asyncHandler(authController.login)); // login (create session)
+  router.route(AuthRoutes.SESSIONS).post(asyncHandler(authController.login));
 
   router
-    .route("/sessions/current")
-    .put(asyncHandler(authController.refreshToken)) // refresh token
-    .delete(protect, asyncHandler(authController.logout)); // logout
+    .route(AuthRoutes.CURRENT_SESSION)
+    .put(asyncHandler(authController.refreshToken))
+    .delete(protect, asyncHandler(authController.logout));
 
   return router;
 }

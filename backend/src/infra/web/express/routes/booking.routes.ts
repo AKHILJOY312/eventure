@@ -4,6 +4,7 @@ import { TYPES } from "@/config/di/types";
 import { BookingController } from "@/interface-adapters/controllers/BookingController";
 import { asyncHandler } from "../handler/asyncHandler";
 import { createProtectMiddleware } from "../middleware/authentication";
+import { BookingRoutes } from "@/config/routes.config";
 
 export function getBookingRoutes(container: Container): Router {
   const router = Router();
@@ -17,16 +18,20 @@ export function getBookingRoutes(container: Container): Router {
 
   router.use(protect);
 
-  router.route("/").post(asyncHandler(bookingController.createBooking));
-
-  router.route("/me").get(asyncHandler(bookingController.getMyBookings));
+  router
+    .route(BookingRoutes.ROOT)
+    .post(asyncHandler(bookingController.createBooking));
 
   router
-    .route("/price/calculate")
+    .route(BookingRoutes.ME)
+    .get(asyncHandler(bookingController.getMyBookings));
+
+  router
+    .route(BookingRoutes.CALCULATE_PRICE)
     .get(asyncHandler(bookingController.calculatePrice));
 
   router
-    .route("/cancel")
+    .route(BookingRoutes.CANCEL)
     .patch(asyncHandler(bookingController.cancelBooking));
 
   return router;

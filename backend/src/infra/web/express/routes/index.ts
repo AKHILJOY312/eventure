@@ -4,12 +4,13 @@ import { getAuthRoutes } from "./auth.routes";
 import { getAdminRoutes } from "./admin.routes";
 import { getBookingRoutes } from "./booking.routes";
 import { getDiscoverRoutes } from "./discover.routes";
+import { RootRoutes } from "@/config/routes.config";
 
 const router = Router();
 
-router.use("/auth", getAuthRoutes(container));
-router.use("/admin", getAdminRoutes(container));
-router.use("/bookings", getBookingRoutes(container));
-router.use("/discover", getDiscoverRoutes(container));
+router.use(RootRoutes.AUTH, getAuthRoutes(container));
+router.use(RootRoutes.ADMIN, getAdminRoutes(container));
+router.use(RootRoutes.BOOKINGS, getBookingRoutes(container));
+router.use(RootRoutes.DISCOVER, getDiscoverRoutes(container));
 
 export default router;
